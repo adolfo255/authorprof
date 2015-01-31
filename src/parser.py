@@ -7,7 +7,7 @@ array_data = []
 
 
 def parse_xml(file):
-    """lee el xml y hace append en nuestro arreglo que se escribirá como json"""
+    """lee el xml y hace append en nuestro arreglo que se escribira como json"""
     tree = ET.parse(file)
     root = tree.getroot()
     for author in root.iter('author'):
