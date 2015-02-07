@@ -30,6 +30,7 @@ if __name__ == "__main__":
     # Colecta todos los jsons
     dfs=[]
     idx=[]
+    c=0
     for root, dirs, files in os.walk(opts.DIR):
         for filename in files:
             if filename.endswith('.json'):
@@ -37,20 +38,22 @@ if __name__ == "__main__":
                     data = json.load(json_file)
                     idd=os.path.basename(filename[:-5])
                     for tweet in data:
+                        c+=1
                         try:
-                            idx.append((tweet['index'],idd))
                             dfs.append(tweet['data'])
+                            idx.append((tweet['index'],idd))
                         except KeyError:
                             pass
 
     # Calculamos los features
     # Creamos contador
-    count_vect = CountVectorizer(min_df=5)
+    count_vect = CountVectorizer(min_df=100)
     # Contamos
     feats = count_vect.fit_transform(np.asarray(dfs))
 
     # Guardar df_new
-    np.save(os.path.join(opts.dir,prefix),feats)
+    np.savez(os.path.join(opts.dir,prefix+'.npz'),data = feats.data ,indices=feats.indices,
+                     indptr = feats.indptr, shape=feats.shape )
 
     with open(os.path.join(opts.dir,prefix+'.idx'),'w') as idxf:
         for tweet,idd in idx:

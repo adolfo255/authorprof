@@ -4,6 +4,7 @@
 # Importar librerías requeridas
 import pandas as pd
 import numpy as np
+import scipy
 import argparse
 import os
 import json
@@ -41,7 +42,9 @@ if __name__ == "__main__":
     dfs=[]
     idx=[]
     # Los pega en un mismo dataframe
-    x=np.load(os.path.join(opts.dir,feats[0]+'.npy'))
+    loader=np.load(os.path.join(opts.dir,feats[0]+'.npz'))
+    x =scipy.sparse.csr_matrix((  loader['data'], loader['indices'], loader['indptr']),
+                             shape = loader['shape'])
 
     id2label=[]
     with open(os.path.join(opts.dir,feats[0]+'.idx'),'r') as idxf:
@@ -52,10 +55,8 @@ if __name__ == "__main__":
 
     id2label=dict(id2label)
 
-    print "Spliting into training and testing"
-    y= [id2label[idd][0] for idd in idx if id2label.has_key(idd)]
-
-    X_train, X_test, y_train, y_test = train_test_split(x,
+    y= [id2label[idd][0] for idd in idx]
+    X_train, X_test, y_train, y_test = train_test_split(x.toarray(),
                                                     y, test_size=0.33)
 
     print "Training"
@@ -67,6 +68,8 @@ if __name__ == "__main__":
     classifier.fit(X_train, y_train)
     print "Predicting"
     prediction = classifier.predict(X_test)
+    print prediction.shape
+    print len(y_test)
 
     from sklearn.metrics.metrics import precision_score, recall_score, confusion_matrix, classification_report, accuracy_score
     print '\nAccuracy:', accuracy_score(y_test, prediction)
