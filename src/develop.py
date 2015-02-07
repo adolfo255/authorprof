@@ -31,17 +31,11 @@ if __name__ == "__main__":
     feats=['1grams']
 
     # Carga etiqueta
-    id2label={}
-    print "Loading labels"
-    for root, dirs, files in os.walk(opts.DIR):
-        for filename in files:
-            if filename.endswith('.json'):
-                with open(os.path.join(opts.DIR,filename)) as json_file:
-                    info = json.load(json_file)
-                for idd,data in zip(info['index'],info['data']):
-                    # Cambiar a 0 para edad
-                    id2label[idd]=data[1]
-
+    print "Loading truth labels"
+    truth={}
+    for line in open(os.path.join(opts.DIR,'truth.txt')):
+        bits=line.split(':::')
+        truth[bits[0]]=bits[1:]
 
     # Colecta todos los features
     dfs=[]
@@ -49,13 +43,17 @@ if __name__ == "__main__":
     # Los pega en un mismo dataframe
     x=np.load(os.path.join(opts.dir,feats[0]+'.npy'))
 
-
+    id2label=[]
     with open(os.path.join(opts.dir,feats[0]+'.idx'),'r') as idxf:
         for line in idxf:
-            idx.append(int(line))
+            bits=line.strip().split()
+            idx.append(bits[0])
+            id2label.append((bits[0],truth[bits[1]]))
+
+    id2label=dict(id2label)
 
     print "Spliting into training and testing"
-    y= [id2label[idd] for idd in idx if id2label.has_key(idd)]
+    y= [id2label[idd][0] for idd in idx if id2label.has_key(idd)]
 
     X_train, X_test, y_train, y_test = train_test_split(x,
                                                     y, test_size=0.33)

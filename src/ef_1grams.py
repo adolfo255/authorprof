@@ -34,26 +34,27 @@ if __name__ == "__main__":
         for filename in files:
             if filename.endswith('.json'):
                 with open(os.path.join(opts.DIR,filename)) as json_file:
-                    info = json.load(json_file)
-                    idx.extend(info['index'])
-                    dfs.append(np.array(info['data']))
-
-    # Los pega en un mismo dataframe
-    df=np.concatenate(dfs)
+                    data = json.load(json_file)
+                    idd=os.path.basename(filename[:-5])
+                    for tweet in data:
+                        try:
+                            idx.append((tweet['index'],idd))
+                            dfs.append(tweet['data'])
+                        except KeyError:
+                            pass
 
     # Calculamos los features
     # Creamos contador
     count_vect = CountVectorizer(min_df=5)
     # Contamos
-    feats = count_vect.fit_transform(np.asarray(df[:,2]))
+    feats = count_vect.fit_transform(np.asarray(dfs))
 
     # Guardar df_new
     np.save(os.path.join(opts.dir,prefix),feats)
 
-   
     with open(os.path.join(opts.dir,prefix+'.idx'),'w') as idxf:
-        for idd in idx:
-            print >> idxf, idd
+        for tweet,idd in idx:
+            print >> idxf, tweet, idd
  
    
     
