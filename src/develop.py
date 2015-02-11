@@ -2,7 +2,7 @@
 # -*- coding: utf-8
 
 # Importar librerías requeridas
-import pandas as pd
+import cPickle as pickle
 import numpy as np
 import scipy
 import argparse
@@ -42,9 +42,8 @@ if __name__ == "__main__":
     dfs=[]
     idx=[]
     # Los pega en un mismo dataframe
-    loader=np.load(os.path.join(opts.dir,feats[0]+'.npz'))
-    x =scipy.sparse.csr_matrix((  loader['data'], loader['indices'], loader['indptr']),
-                             shape = loader['shape'])
+    with open(os.path.join(opts.dir,feats[0]+'.dat'), 'rb') as infile:
+        x = pickle.load(infile)
 
     id2label=[]
     with open(os.path.join(opts.dir,feats[0]+'.idx'),'r') as idxf:
@@ -55,7 +54,18 @@ if __name__ == "__main__":
 
     id2label=dict(id2label)
 
-    y= [id2label[idd][0] for idd in idx]
+    y_labels= [id2label[idd][0] for idd in idx]
+    labels={}
+    for label in y_labels:
+        try:
+            labels[label]+=1
+        except KeyError:
+            labels[label]=1
+
+    labels=labels.keys()
+    y=[ labels.index(label) for label in y_labels]
+
+s
     X_train, X_test, y_train, y_test = train_test_split(x.toarray(),
                                                     y, test_size=0.33)
 
@@ -83,12 +93,12 @@ if __name__ == "__main__":
 
     import matplotlib.pyplot as plt
     confusion_matrix_plot = confusion_matrix(y_test, prediction)
-    plt.title('matriz de confusion')
-    plt.colorbar()
-    plt.xlabel()
-    plt.xlabel('categoria de verdad')
-    plt.ylabel('categoria predecida')
-    plt.show()
+    #plt.title('matriz de confusion')
+    #plt.colorbar()
+    #plt.xlabel()
+    #plt.xlabel('categoria de verdad')
+    #plt.ylabel('categoria predecida')
+    #plt.show()
 
       
         

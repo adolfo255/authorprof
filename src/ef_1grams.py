@@ -2,7 +2,7 @@
 # -*- coding: utf-8
 
 # Importar librerías requeridas
-import pandas as pd
+import cPickle as pickle
 from sklearn.feature_extraction.text import CountVectorizer
 import numpy as np
 import argparse
@@ -52,10 +52,10 @@ if __name__ == "__main__":
     feats = count_vect.fit_transform(np.asarray(dfs))
 
     # Guardar df_new
-    np.savez(os.path.join(opts.dir,prefix+'.npz'),data = feats.data ,indices=feats.indices,
-                     indptr = feats.indptr, shape=feats.shape )
+    with open(os.path.join(opts.dir,prefix+'.npz'),'wb') as idxf:
+        pickle.dump(feats, idxf, pickle.HIGHEST_PROTOCOL)
 
-    with open(os.path.join(opts.dir,prefix+'.idx'),'w') as idxf:
+    with open(os.path.join(opts.dir,prefix+'.idx'),'wb') as idxf:
         for tweet,idd in idx:
             print >> idxf, tweet, idd
  
