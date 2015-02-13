@@ -47,12 +47,12 @@ if __name__ == "__main__":
 
     # Calculamos los features
     # Creamos contador
-    count_vect = CountVectorizer(min_df=100)
+    count_vect = CountVectorizer(min_df=101)
     # Contamos
     feats = count_vect.fit_transform(np.asarray(dfs))
 
     # Guardar df_new
-    with open(os.path.join(opts.dir,prefix+'.npz'),'wb') as idxf:
+    with open(os.path.join(opts.dir,prefix+'.dat'),'wb') as idxf:
         pickle.dump(feats, idxf, pickle.HIGHEST_PROTOCOL)
 
     with open(os.path.join(opts.dir,prefix+'.idx'),'wb') as idxf:

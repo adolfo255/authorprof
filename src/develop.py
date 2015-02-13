@@ -65,7 +65,6 @@ if __name__ == "__main__":
     labels=labels.keys()
     y=[ labels.index(label) for label in y_labels]
 
-s
     X_train, X_test, y_train, y_test = train_test_split(x.toarray(),
                                                     y, test_size=0.33)
 
