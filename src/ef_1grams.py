@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8
+from __future__ import print_function
 
 # Importar librerías requeridas
 import cPickle as pickle
@@ -7,7 +8,9 @@ from sklearn.feature_extraction.text import CountVectorizer
 import numpy as np
 import argparse
 import os
-import json
+
+# Local imports
+from load_tweets import load_tweets
 
 # Variables de configuaración
 NAME='ef_ngrams'
@@ -21,43 +24,59 @@ if __name__ == "__main__":
     p.add_argument("-d", "--dir",
             action="store_true", dest="dir",default="feats",
         help="Default directory for features [feats]")
- 
+    p.add_argument("-p", "--pref",
+            action="store_true", dest="pref",default=prefix,
+        help="Prefix to save the file of features %s"%prefix)
+    p.add_argument("--mix",
+            action="store_true", dest="mix",default=True,
+        help="Mix tweets into pefiles")
+    p.add_argument("--format",
+            action="store_true", dest="format",default="pan15",
+        help="Change to pan14 to use format from 2015 [feats]")
     p.add_argument("-v", "--verbose",
         action="store_true", dest="verbose",
         help="Verbose mode [Off]")
     opts = p.parse_args()
 
-    # Colecta todos los jsons
-    dfs=[]
-    idx=[]
-    c=0
-    for root, dirs, files in os.walk(opts.DIR):
-        for filename in files:
-            if filename.endswith('.json'):
-                with open(os.path.join(opts.DIR,filename)) as json_file:
-                    data = json.load(json_file)
-                    idd=os.path.basename(filename[:-5])
-                    for tweet in data:
-                        c+=1
-                        try:
-                            dfs.append(tweet['data'])
-                            idx.append((tweet['index'],idd))
-                        except KeyError:
-                            pass
+    # prepara función de verbose
+    if opts.verbose:
+        def verbose(*args):
+            print(*args)
+    else:   
+        verbose = lambda *a: None 
+
+    # Colecta los tweets y sus identificadores (idtweet y idusuario)
+    tweets,ids=load_tweets(opts.DIR,opts.format,mix=opts.mix)
+
+    # Imprime alguna información sobre los tweets
+    if opts.verbose:
+        for i,tweet in enumerate(tweets[:10]):
+            verbose('Tweet example',i+1,tweet[:100])
+        verbose("Total tweets   : ",len(tweets))
+        try:
+            verbose("Total usuarios : ",len(set([id for x,id in ids])))
+        except ValueError:
+            verbose("Total usuarios : ",len(ids))
 
     # Calculamos los features
-    # Creamos contador
-    count_vect = CountVectorizer(min_df=101)
-    # Contamos
-    feats = count_vect.fit_transform(np.asarray(dfs))
+    # - Creamos contador
+    count_vect = CountVectorizer(min_df=10)
 
-    # Guardar df_new
+    # - Contamos las palabras en los tweets
+    feats = count_vect.fit_transform(np.asarray(tweets))
+
+    # Guarda la matrix de features
     with open(os.path.join(opts.dir,prefix+'.dat'),'wb') as idxf:
         pickle.dump(feats, idxf, pickle.HIGHEST_PROTOCOL)
 
+    # Imprimimos información de la matrix
+    verbose("First feats names :",count_vect.get_feature_names()[:10])
+    verbose("Total de features :",feats.shape[1])
+    verbose("Total de renglones:",feats.shape[0])
+
+    # Guarda los indices por renglones de la matrix (usuario o tweet, usuario)
     with open(os.path.join(opts.dir,prefix+'.idx'),'wb') as idxf:
-        for tweet,idd in idx:
-            print >> idxf, tweet, idd
+        pickle.dump(ids, idxf, pickle.HIGHEST_PROTOCOL)
  
    
     
