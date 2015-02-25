@@ -12,6 +12,7 @@ import json
 
 
 from sklearn.cross_validation import train_test_split
+from sklearn import cross_validation
 
 # Variables de configuaración
 NAME='develop'
@@ -86,7 +87,7 @@ if __name__ == "__main__":
     y=[ labels.index(label) for label in y_labels]
 
     # Cortando datos en training y test
-    X_train, X_test, y_train, y_test = train_test_split(x.toarray(),
+    X_train, X_test, y_train, y_test = cross_validation.train_test_split(x.toarray(),
                                                     y, test_size=0.20)
 
     # Preparando la máquina de aprendizaje
