@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8
+from __future__ import print_function
 
 # Importar librerías requeridas
 import cPickle as pickle
@@ -11,6 +12,7 @@ import json
 
 
 from sklearn.cross_validation import train_test_split
+from sklearn import cross_validation
 
 # Variables de configuaración
 NAME='develop'
@@ -20,7 +22,6 @@ if __name__ == "__main__":
     p = argparse.ArgumentParser(NAME)
     p.add_argument("DIR",default=None,
         action="store", help="Directory with corpus with json")
-
     p.add_argument("-d", "--dir",
         action="store_true", dest="dir",default="feats",
         help="Default directory for features [feats]")
@@ -29,34 +30,47 @@ if __name__ == "__main__":
         help="Verbose mode [Off]")
     opts = p.parse_args()
 
+    # prepara función de verbose
+    if opts.verbose:
+        def verbose(*args):
+            print(*args)
+    else:   
+        verbose = lambda *a: None 
+
+
     feats=['1grams']
 
-    # Carga etiqueta
-    print "Loading truth labels"
+    # Carga etiquetas 
     truth={}
     for line in open(os.path.join(opts.DIR,'truth.txt')):
         bits=line.split(':::')
         truth[bits[0]]=bits[1:]
 
-    # Colecta todos los features
-    dfs=[]
-    idx=[]
-    # Los pega en un mismo dataframe
+    # Lee las etiquetas
+    with open(os.path.join(opts.dir,feats[0]+'.idx'),'r') as idxf:
+        ids = pickle.load(idxf)
+
+    # Lee la matrix de features de disco
     with open(os.path.join(opts.dir,feats[0]+'.dat'), 'rb') as infile:
         x = pickle.load(infile)
-        x=x.astype(np.int8)
 
-    print x.shape
-    id2label=[]
-    with open(os.path.join(opts.dir,feats[0]+'.idx'),'r') as idxf:
-        for line in idxf:
-            bits=line.strip().split()
-            idx.append(bits[0])
-            id2label.append((bits[0],truth[bits[1]]))
+    # Checa que etiquetas e identificatores coincidan
+    if not x.shape[0]==len(ids):
+        print("Error con matrix de features {0} e identificadores {1}".
+            format(len(x.shape), x.shape[0]))
+    verbose("Truth    :", len(truth) )
+    verbose("Ids      :", len(ids) )
+    verbose("Rows     :", x.shape[0] )
+    verbose("Features :", x.shape[1] )
+    verbose('----------\n')
 
-    id2label=dict(id2label)
-
-    y_labels= [id2label[idd][0] for idd in idx]
+    # recuperando las etiquetas
+    try:
+        y_labels= [truth[id_usuario][0] for idd,id_usuario in ids]
+    except ValueError:
+        y_labels= [truth[id_usuario][0] for id_usuario in ids]
+        
+    # Pasando etiquetas a números    
     labels={}
     for label in y_labels:
         try:
@@ -65,35 +79,44 @@ if __name__ == "__main__":
             labels[label]=1
 
     labels=labels.keys()
+    for label in labels:
+        verbose("Label",label,"-->",labels.index(label))
+    verbose('----------\n')
+
+    # Creando el vector de etiquetas
     y=[ labels.index(label) for label in y_labels]
 
-    X_train, X_test, y_train, y_test = train_test_split(x.toarray(),
-                                                    y, test_size=0.33)
+    # Cortando datos en training y test
+    X_train, X_test, y_train, y_test = cross_validation.train_test_split(x.toarray(),
+                                                    y, test_size=0.20)
 
-    print "Training"
+    # Preparando la máquina de aprendizaje
+    verbose("Training....")
     from sklearn.ensemble import RandomForestClassifier
-
-    #se pasmo con 1000000
-    #probar con mas parametros
     classifier=RandomForestClassifier(n_estimators=100)
-    classifier.fit(X_train, y_train)
-    print "Predicting"
-    prediction = classifier.predict(X_test)
-    print prediction.shape
-    print len(y_test)
 
+    # Aprendiendo
+    classifier.fit(X_train, y_train)
+
+    # Predicioendo
+    verbose("Predicting...")
+    prediction = classifier.predict(X_test)
+    verbose('----------\n')
+    verbose("Evaluation")
+
+    # Calculando desempeño
     from sklearn.metrics.metrics import precision_score, recall_score, confusion_matrix, classification_report, accuracy_score
-    print '\nAccuracy:', accuracy_score(y_test, prediction)
-    print '\nscore:', classifier.score(X_train, y_train)
-    print '\nrecall:', recall_score(y_test, prediction)
-    print '\nprecision:', precision_score(y_test, prediction)
-    print '\n clasification report:\n', classification_report(y_test, prediction)
-    print '\n confussion matrix:\n',confusion_matrix(y_test, prediction)
+    verbose( 'Accuracy              :', accuracy_score(y_test, prediction))
+    verbose( 'Precision             :', precision_score(y_test, prediction))
+    verbose( 'Recall                :', recall_score(y_test, prediction))
+    verbose( 'Score                 :', classifier.score(X_train, y_train))
+    verbose( '\nClasification report:\n', classification_report(y_test,
+            prediction))
+    verbose( '\nConfussion matrix   :\n',confusion_matrix(y_test, prediction))
 
     #plots:
-
-    import matplotlib.pyplot as plt
-    confusion_matrix_plot = confusion_matrix(y_test, prediction)
+    #import matplotlib.pyplot as plt
+    #confusion_matrix_plot = confusion_matrix(y_test, prediction)
     #plt.title('matriz de confusion')
     #plt.colorbar()
     #plt.xlabel()
