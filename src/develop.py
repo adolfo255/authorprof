@@ -44,7 +44,9 @@ if __name__ == "__main__":
     # Los pega en un mismo dataframe
     with open(os.path.join(opts.dir,feats[0]+'.dat'), 'rb') as infile:
         x = pickle.load(infile)
+        x=x.astype(np.int8)
 
+    print x.shape
     id2label=[]
     with open(os.path.join(opts.dir,feats[0]+'.idx'),'r') as idxf:
         for line in idxf:
