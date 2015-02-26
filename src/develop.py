@@ -20,7 +20,10 @@ if __name__ == "__main__":
     # Las opciones de línea de comando
     p = argparse.ArgumentParser(NAME)
     p.add_argument("DIR",default=None,
-        action="store", help="Directory with corpus with json")
+        action="store", help="Directory with corpus")
+    p.add_argument("-m", "--mode",type=str,
+        action="store", dest="mode",default="gender",
+        help="Mode (gender|age) [gender]")
     p.add_argument("-f", "--folds",type=int,
         action="store", dest="folds",default=10,
         help="Folds during cross validation [10]")
@@ -39,8 +42,13 @@ if __name__ == "__main__":
     else:   
         verbose = lambda *a: None 
 
-
     feats=['1grams']
+
+    if opts.mode=="gender":
+        index_y=0
+    elif opts.mode=="age":
+        index_y=1
+
 
     # Carga etiquetas 
     truth={}
@@ -69,9 +77,9 @@ if __name__ == "__main__":
 
     # recuperando las etiquetas
     try:
-        y_labels= [truth[id_usuario][0] for idd,id_usuario in ids]
+        y_labels= [truth[id_usuario][index_y] for idd,id_usuario in ids]
     except ValueError:
-        y_labels= [truth[id_usuario][0] for id_usuario in ids]
+        y_labels= [truth[id_usuario][index_y] for id_usuario in ids]
         
     # Pasando etiquetas a números    
     labels={}
