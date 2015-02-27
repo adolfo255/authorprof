@@ -57,7 +57,7 @@ if __name__ == "__main__":
         truth[bits[0]]=bits[1:]
 
     # Lee las etiquetas
-    with open(os.path.join(opts.dir,feats[0]+'.idx'),'r') as idxf:
+    with open(os.path.join(opts.dir,feats[0]+'.idx'),'rb') as idxf:
         ids = pickle.load(idxf)
 
     # Lee la matrix de features de disco
