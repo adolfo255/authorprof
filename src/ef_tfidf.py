@@ -13,8 +13,8 @@ import os
 from load_tweets import load_tweets
 
 # Variables de configuaración
-NAME='ef_ngrams'
-prefix='1grams'
+NAME='ef_tdidf'
+prefix='tdidf'
 
 if __name__ == "__main__":
     # Las opciones de línea de comando
@@ -72,7 +72,7 @@ if __name__ == "__main__":
         pickle.dump(feats, idxf, pickle.HIGHEST_PROTOCOL)
 
     # Imprimimos información de la matrix
-    verbose("First feats names :",count_vect.get_feature_names()[:10])
+    verbose("First feats names :",tfidf_vect.get_feature_names()[:10])
     verbose("Total de features :",feats.shape[1])
     verbose("Total de renglones:",feats.shape[0])
 
