@@ -33,7 +33,13 @@ if __name__ == "__main__":
     p.add_argument("-v", "--verbose",
         action="store_true", dest="verbose",
         help="Verbose mode [Off]")
+    p.add_argument("--estimators",
+        action="store", dest="estimators",default=100,type=int,
+        help="Define el valor para n_estimators")
     opts = p.parse_args()
+  
+
+    
 
     # prepara función de verbose
     if opts.verbose:
@@ -42,7 +48,7 @@ if __name__ == "__main__":
     else:   
         verbose = lambda *a: None 
 
-    feats=['1grams']
+    feats=['tfidf']
 
     if opts.mode=="gender":
         index_y=0
@@ -108,7 +114,7 @@ if __name__ == "__main__":
         # Preparando la máquina de aprendizaje
         verbose("   Training fold   (%i)"%(i+1))
         from sklearn.ensemble import RandomForestClassifier
-        classifier=RandomForestClassifier(n_estimators=100)
+        classifier=RandomForestClassifier(n_estimators=opts.estimators)
 
         # Aprendiendo
         classifier.fit(X_train, y_train)

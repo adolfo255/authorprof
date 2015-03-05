@@ -13,8 +13,8 @@ import os
 from load_tweets import load_tweets
 
 # Variables de configuaración
-NAME='ef_tdidf'
-prefix='tdidf'
+NAME='ef_tfidf'
+prefix='tfidf'
 
 if __name__ == "__main__":
     # Las opciones de línea de comando
@@ -36,7 +36,11 @@ if __name__ == "__main__":
     p.add_argument("-v", "--verbose",
         action="store_true", dest="verbose",
         help="Verbose mode [Off]")
+    p.add_argument("--min",
+        action="store", dest="min",default=10,type=int,
+        help="Define el valor minimo de cuentas ")
     opts = p.parse_args()
+    
 
     # prepara función de verbose
     if opts.verbose:
@@ -61,7 +65,7 @@ if __name__ == "__main__":
     # Calculamos los features
     # - Creamos contador
     from sklearn.feature_extraction.text import TfidfVectorizer
-    tfidf_vect = TfidfVectorizer(min_df=10)
+    tfidf_vect = TfidfVectorizer(min_df=opts.min)
     #count_vect = CountVectorizer(min_df=10)
 
     # - Contamos las palabras en los tweets
