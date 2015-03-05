@@ -46,21 +46,19 @@ if __name__ == "__main__":
     p.add_argument("-v", "--verbose",
         action="store_true", dest="verbose",
         help="Verbose mode [Off]")
-    p.add_argument("--stopwords", default="data/stopwords.txt",
+
+    p.add_argument("--stopwords", default=None,
         action="store", dest="stopwords",
         help="List of stop words [data/stopwords.txt]")
 
     opts = p.parse_args()
 
-
-##################### Con stopwords ########################
-
- # prepara función de verbose
     if opts.verbose:
         def verbose(*args):
             print(*args)
     else:   
         verbose = lambda *a: None 
+
 
     # Colecta los tweets y sus identificadores (idtweet y idusuario)
     tweets,ids=load_tweets(opts.DIR,opts.format,mix=opts.mix)
@@ -79,12 +77,15 @@ if __name__ == "__main__":
     # - Creamos contador
 
     #metemos las stop words en una lista
-    with codecs.open(opts.stopwords, encoding='utf-8') as f:
-        spanish_stop_words = [line.strip() for line in f]
-        #print (spanish_stop_words)
+    if not opts.stopwords:
+        my_stop_words=[]
+    else:
+        with codecs.open(opts.stopwords, encoding='utf-8') as f:
+            spanish_stop_words = [line.strip() for line in f]
+            #print (spanish_stop_words)
 
-    from sklearn.feature_extraction import text
-    my_stop_words = text.ENGLISH_STOP_WORDS.union(spanish_stop_words)
+        from sklearn.feature_extraction import text
+        my_stop_words = text.ENGLISH_STOP_WORDS.union(spanish_stop_words)
 
     #Le pasamos las stop words al vectorizer
     count_vect = CountVectorizer(min_df=10, stop_words=set(my_stop_words))
@@ -105,44 +106,3 @@ if __name__ == "__main__":
     with open(os.path.join(opts.dir,prefix+'.idx'),'wb') as idxf:
         pickle.dump(ids, idxf, pickle.HIGHEST_PROTOCOL)
 
-######################## Sin stop_words ##########################
-
-# prepara función de verbose
-    if opts.verbose:
-        def verbose(*args):
-            print(*args)
-    else:   
-        verbose = lambda *a: None 
-
-    # Colecta los tweets y sus identificadores (idtweet y idusuario)
-    tweets,ids=load_tweets(opts.DIR,opts.format,mix=opts.mix)
-
-    # Imprime alguna información sobre los tweets
-    if opts.verbose:
-        for i,tweet in enumerate(tweets[:10]):
-            verbose('Tweet example',i+1,tweet[:100])
-        verbose("Total tweets   : ",len(tweets))
-        try:
-            verbose("Total usuarios : ",len(set([id for x,id in ids])))
-        except ValueError:
-            verbose("Total usuarios : ",len(ids))
-
-    # Calculamos los features
-    # - Creamos contador
-    count_vect = CountVectorizer(min_df=10)
-
-    # - Contamos las palabras en los tweets
-    feats = count_vect.fit_transform(np.asarray(tweets))
-
-    # Guarda la matrix de features
-    with open(os.path.join(opts.dir,prefix+'.dat'),'wb') as idxf:
-        pickle.dump(feats, idxf, pickle.HIGHEST_PROTOCOL)
-
-    # Imprimimos información de la matrix
-    verbose("First feats names :",count_vect.get_feature_names()[:10])
-    verbose("Total de features :",feats.shape[1])
-    verbose("Total de renglones:",feats.shape[0])
-
-    # Guarda los indices por renglones de la matrix (usuario o tweet, usuario)
-    with open(os.path.join(opts.dir,prefix+'.idx'),'wb') as idxf:
-        pickle.dump(ids, idxf, pickle.HIGHEST_PROTOCOL)
