@@ -1,55 +1,121 @@
-# -*- coding: utf-8 -*-
-#aqui ya jala
+#!/usr/bin/env python
+# -*- coding: utf-8
+from __future__ import print_function
+import argparse
+import codecs
+from sklearn.feature_extraction.text import TfidfVectorizer
+import cPickle as pickle
+from sklearn.feature_extraction.text import CountVectorizer
+import numpy as np
+import os
 import re
-file__1 = '/Users/user/Desktop/usuarios.txt'
 
-#Pos
-file__2 = '/Users/user/Downloads/SentimentAnalysisDict/en/Reyes/counterFactuality-english.txt'
-#Neg
-#falta especificar que lista de palabras se le pasará
-file__3= ''
+from load_tweets import load_tweets
 
-tweets = [[line.strip()] for line in open(file__1)]
+NAME='ef_list_baseline'
+prefix='list_baseline'
 
-#numero de usuarios:
-#print len(lines)
+if __name__ == "__main__":
+    # Las opciones de línea de comando
+    p = argparse.ArgumentParser(NAME)
 
-#regresamos todas las opiniones de los usuarios en una lista de listas
-#print tweets
-print len(tweets)
+    p.add_argument("DIR",default=None,
+        action="store", help="Directory with corpus")
+   
+    p.add_argument("LIST1",default=None,
+        action="store", help="File with list of words")
+    
+    p.add_argument("LIST2",default=None,
+        action="store", help="File with list of words")
+ 
+    p.add_argument("-d", "--dir",
+            action="store_true", dest="dir",default="feats",
+        help="Default directory for features [feats]")
+
+    p.add_argument("-p", "--pref",
+            action="store_true", dest="pref",default=prefix,
+        help="Prefix to save the file of features %s"%prefix)
+
+    p.add_argument("--mix",
+            action="store_true", dest="mix",default=True,
+        help="Mix tweets into pefiles")
+
+    p.add_argument("--format",
+            action="store_true", dest="format",default="pan15",
+        help="Change to pan14 to use format from 2015 [feats]")
+    
+
+    p.add_argument("-v", "--verbose",
+        action="store_true", dest="verbose",
+        help="Verbose mode [Off]")
+
+    p.add_argument("--stopwords", default=None,
+        action="store", dest="stopwords",
+        help="List of stop words [data/stopwords.txt]")
+
+    opts = p.parse_args()
+
+    if opts.verbose:
+        def verbose(*args):
+            print(*args)
+    else:   
+        verbose = lambda *a: None 
 
 
-list_of_words = [line.strip() for line in open(file__2)]
-print list_of_words
+    # Colecta los tweets y sus identificadores (idtweet y idusuario)
+    tweets,ids=load_tweets(opts.DIR,opts.format,mix=opts.mix)
 
-#Este_seria:
-#list_of_words_2 = [line.strip() for line in open(file_3)]
+    # Imprime alguna información sobre los tweets
+    if opts.verbose:
+        for i,tweet in enumerate(tweets[:10]):
+            verbose('Tweet example',i+1,tweet[:100])
+        verbose("Total tweets   : ",len(tweets))
+        try:
+            verbose("Total usuarios : ",len(set([id for x,id in ids])))
+        except ValueError:
+            verbose("Total usuarios : ",len(ids))
 
-#aqui_paso_el_mismo_archivo_porque_no_sabia_cual_pero_sirve_para_otro
-list_of_words_2 = [line.strip() for line in open(file__2)]
-print list_of_words_2
+    # Calculamos los features
+    # - Cargar lista de palabras uno
 
-counts = []
-#j son los usuarios
-for i,j in enumerate(tweets):
-        #print 'esto es j',j
-        countador = 0
-        countador_2 = 0
-        for x in list_of_words:
-            if re.search(r'(?i)\b'+x+r'\b', j[0]):
-                countador += 1
+    list_of_words1 = [line.strip() for line in open(opts.LIST1)]
+    print(list_of_words1)
+    list_of_words2 = [line.strip() for line in open(opts.LIST2)]
+    print(list_of_words2)
 
+    counts = []
+    for i,j in enumerate(tweets):
+            #print 'esto es j',j
+            countador = 0
+            countador_2 = 0
+            for x in list_of_words1:
+                if re.search(r'(?i)\b'+x+r'\b',j):
+                    countador += 1
 
-        for y in list_of_words_2:
-            if re.search(r'(?i)\b'+y+r'\b', j[0]):
-                countador_2 += 1
-                #print "aqui\n",countador_2
-                
-        counts.append((countador,countador_2))
+            for y in list_of_words2:
+                if re.search(r'(?i)\b'+y+r'\b', j):
+                    countador_2 += 1
+                    #print "aqui\n",countador_2
+                    
+            counts.append((countador,countador_2))
 
-print "\nCounts:\n",counts
-#vemos que son 152 perfiles
-#print len(counts)
+    print("\nCounts:\n",counts)
+
+    # - Contamos las palabras en los tweets
+    feats = np.asarray(counts)
+
+    # Guarda la matrix de features
+    with open(os.path.join(opts.dir,prefix+'.dat'),'wb') as idxf:
+        pickle.dump(feats, idxf, pickle.HIGHEST_PROTOCOL)
+
+    # Imprimimos información de la matrix
+    verbose("Total de features :",feats.shape[1])
+    verbose("Total de renglones:",feats.shape[0])
+
+    # Guarda los indices por renglones de la matrix (usuario o tweet, usuario)
+    with open(os.path.join(opts.dir,prefix+'.idx'),'wb') as idxf:
+        pickle.dump(ids, idxf, pickle.HIGHEST_PROTOCOL)
+
 
 
 
