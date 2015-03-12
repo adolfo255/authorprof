@@ -3,17 +3,14 @@
 from __future__ import print_function
 import argparse
 import codecs
-from sklearn.feature_extraction.text import TfidfVectorizer
 import cPickle as pickle
-from sklearn.feature_extraction.text import CountVectorizer
 import numpy as np
 import os
-import re
 
 from load_tweets import load_tweets
 
-NAME='ef_list_baseline'
-prefix='list_baseline'
+NAME='ef_list_frequency'
+prefix='list_frequency'
 
 if __name__ == "__main__":
     # Las opciones de línea de comando
@@ -44,7 +41,6 @@ if __name__ == "__main__":
             action="store_true", dest="format",default="pan15",
         help="Change to pan14 to use format from 2015 [feats]")
     
-
     p.add_argument("-v", "--verbose",
         action="store_true", dest="verbose",
         help="Verbose mode [Off]")
@@ -77,17 +73,19 @@ if __name__ == "__main__":
 
     # Calculamos los features
     # - Cargar lista de palabras uno
-    list_of_words1 = [line.strip() for line in codecs.open(opts.LIST1,encoding='utf-8') if 
-                        len(line.strip())>0]
-    list_of_words2 = [line.strip() for line in codecs.open(opts.LIST2,encoding='utf-8') if
-                        len(line.strip())>0]
 
-    counts = []
-    for i,j in enumerate(tweets):
-            countador=sum([j.count(x) for x in list_of_words1])
-            countador_2=sum([j.count(x) for x in list_of_words2])
-     
-            counts.append((countador,countador_2))
+    list_of_words1 = [line.strip() for line in codecs.open(opts.LIST1,encoding='utf-8') if
+            len(line.strip())>0]
+    list_of_words2 = [line.strip() for line in codecs.open(opts.LIST2,encoding='utf-8') if 
+            len(line.strip())>0]
+
+    counts=[]
+    for usuario in tweets:
+        usuario=usuario.split()
+        vec1=[usuario.count(item) for item in list_of_words1]
+        vec2=[usuario.count(item) for item in list_of_words2]
+        vec=vec1+vec2
+        counts.append(vec)
 
     # - Contamos las palabras en los tweets
     feats = np.asarray(counts)

@@ -4,6 +4,7 @@ from __future__ import print_function
 
 # Importar librerías requeridas
 import cPickle as pickle
+import scipy
 import numpy as np
 import argparse
 import os
@@ -25,8 +26,8 @@ if __name__ == "__main__":
         action="store", dest="mode",default="gender",
         help="Mode (gender|age) [gender]")
     p.add_argument("-f", "--folds",type=int,
-        action="store", dest="folds",default=10,
-        help="Folds during cross validation [10]")
+        action="store", dest="folds",default=20,
+        help="Folds during cross validation [20]")
     p.add_argument("-d", "--dir",
         action="store_true", dest="dir",default="feats",
         help="Default directory for features [feats]")
@@ -48,7 +49,7 @@ if __name__ == "__main__":
     else:   
         verbose = lambda *a: None 
 
-    feats=['tfidf']
+    feats=['1grams','tfidf','lb_reyes','lb_hu','lf_reyes','lf_hu']
 
     if opts.mode=="gender":
         index_y=0
@@ -62,19 +63,44 @@ if __name__ == "__main__":
         bits=line.split(':::')
         truth[bits[0]]=bits[1:]
 
-    # Lee las etiquetas
-    with open(os.path.join(opts.dir,feats[0]+'.idx'),'rb') as idxf:
-        ids = pickle.load(idxf)
+    # Carga las matrices
+    x=[]
+    feats_=[]
+    for feat in feats:
+        verbose('Loading:', feat)
+        # Lee los indices de los rengloes
+        try:
+            with open(os.path.join(opts.dir,feat+'.idx'),'rb') as idxf:
+                ids = pickle.load(idxf)
+        except IOError:
+            verbose('Warning, no features...')
+            continue
 
-    # Lee la matrix de features de disco
-    with open(os.path.join(opts.dir,feats[0]+'.dat'), 'rb') as infile:
-        x = pickle.load(infile)
-        x = x.toarray()
+
+        # Lee la matrix de features de disco
+        with open(os.path.join(opts.dir,feat+'.dat'), 'rb') as infile:
+            x_ = pickle.load(infile)
+            if type(x_) is scipy.sparse.csr.csr_matrix:
+                x_ = x_.toarray()
+        x.append(x_)
+        feats_.append(feat)
+
+    verbose("Loaded",len(x),"matrix features")
+    for feat,x_ in zip(feats_,x):
+        verbose('Sumary', feat)
+        verbose("Rows     :", x_.shape[0] )
+        verbose("Features :", x_.shape[1] )
+        verbose('----------\n')
+
+
+    x=np.hstack(x)
 
     # Checa que etiquetas e identificatores coincidan
     if not x.shape[0]==len(ids):
         print("Error con matrix de features {0} e identificadores {1}".
             format(len(x.shape), x.shape[0]))
+
+
     verbose("Truth    :", len(truth) )
     verbose("Ids      :", len(ids) )
     verbose("Rows     :", x.shape[0] )
