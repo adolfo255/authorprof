@@ -1,6 +1,7 @@
 #!/bin/bash
 
-rm feats/*
+rm feats/*.idx
+rm feats/*.dat
 
 python src/ef_1grams.py data/pan15/dutch
 python src/ef_tfidf.py data/pan15/dutch
