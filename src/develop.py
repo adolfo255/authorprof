@@ -10,8 +10,8 @@ import argparse
 import os
 
 
+from sklearn.metrics.metrics import accuracy_score
 from sklearn.cross_validation import KFold
-from sklearn.metrics.metrics import precision_score, recall_score, confusion_matrix, classification_report, accuracy_score, f1_score
 
 
 # Variables de configuaración
@@ -24,7 +24,7 @@ if __name__ == "__main__":
         action="store", help="Directory with corpus")
     p.add_argument("-m", "--mode",type=str,
         action="store", dest="mode",default="gender",
-        help="Mode (gender|age) [gender]")
+        help="Mode (gender|age|extroverted|stable|agreeable|conscientious|open) [gender]")
     p.add_argument("-f", "--folds",type=int,
         action="store", dest="folds",default=20,
         help="Folds during cross validation [20]")
@@ -35,12 +35,10 @@ if __name__ == "__main__":
         action="store_true", dest="verbose",
         help="Verbose mode [Off]")
     p.add_argument("--estimators",
-        action="store", dest="estimators",default=100,type=int,
+        action="store", dest="estimators",default=10000,type=int,
         help="Define el valor para n_estimators")
     opts = p.parse_args()
   
-
-    
 
     # prepara función de verbose
     if opts.verbose:
@@ -55,6 +53,17 @@ if __name__ == "__main__":
         index_y=0
     elif opts.mode=="age":
         index_y=1
+    elif opts.mode.startswith("ex"):
+        index_y=2
+    elif opts.mode.startswith("st"):
+        index_y=3
+    elif opts.mode.startswith("agre"):
+        index_y=4
+    elif opts.mode.startswith("co"):
+        index_y=5
+    elif opts.mode.startswith("op"):
+        index_y=6
+
 
 
     # Carga etiquetas 
@@ -114,20 +123,25 @@ if __name__ == "__main__":
         y_labels= [truth[id_usuario][index_y] for id_usuario in ids]
         
     # Pasando etiquetas a números    
-    labels={}
-    for label in y_labels:
-        try:
-            labels[label]+=1
-        except KeyError:
-            labels[label]=1
+    if opts.mode in ['age','gender']:
+        labels={}
+        for label in y_labels:
+            try:
+                labels[label]+=1
+            except KeyError:
+                labels[label]=1
 
-    labels=labels.keys()
-    for label in labels:
-        verbose("Label",label,"-->",labels.index(label))
-    verbose('----------\n')
+        labels=labels.keys()
+        for label in labels:
+            verbose("Label",label,"-->",labels.index(label))
+        verbose('----------\n')
 
-    # Creando el vector de etiquetas
-    y=np.array([ labels.index(label) for label in y_labels])
+        # Creando el vector de etiquetas
+        y=np.array([ labels.index(label) for label in y_labels])
+    else:
+        y=np.array([float(l) for l in y_labels])
+        print(y)
+
 
     kf = KFold(len(y), n_folds=opts.folds)
     y_=[]
@@ -137,34 +151,60 @@ if __name__ == "__main__":
         # Cortando datos en training y test
         X_train, X_test, y_train, y_test = x[train],x[test],y[train],y[test]
 
-        # Preparando la máquina de aprendizaje
-        verbose("   Training fold   (%i)"%(i+1))
-        from sklearn.ensemble import RandomForestClassifier
-        classifier=RandomForestClassifier(n_estimators=opts.estimators)
+        if opts.mode in ['age','gender']:
+            # Preparando la máquina de aprendizaje
+            verbose("   Training fold   (%i)"%(i+1))
+            from sklearn.ensemble import RandomForestClassifier
+            classifier=RandomForestClassifier(n_estimators=opts.estimators)
 
-        # Aprendiendo
-        classifier.fit(X_train, y_train)
+            # Aprendiendo
+            classifier.fit(X_train, y_train)
 
-        # Prediciendo
-        verbose("   Predicting fold (%i)"%(i+1))
-        prediction = classifier.predict(X_test)
-    
-        verbose('   Accuracy fold   (%i):'%(i+1), accuracy_score(y_test, prediction))
-        y_.extend(y_test)
-        prediction_.extend(prediction)
+            # Prediciendo
+            verbose("   Predicting fold (%i)"%(i+1))
+            prediction = classifier.predict(X_test)
+        
+            verbose('   Accuracy fold   (%i):'%(i+1), accuracy_score(y_test, prediction))
+            y_.extend(y_test)
+            prediction_.extend(prediction)
+
+        else:
+             # Preparando la máquina de aprendizaje
+            verbose("   Regressing fold   (%i)"%(i+1))
+            from sklearn.ensemble import RandomForestRegressor
+            regressor=RandomForestRegressor(n_estimators=opts.estimators)
+
+            # Aprendiendo
+            regressor.fit(X_train, y_train)
+
+            # Prediciendo
+            verbose("   Predicting fold (%i)"%(i+1))
+            prediction = regressor.predict(X_test)
+        
+            y_.extend(y_test)
+            prediction_.extend(prediction)
 
 
+        
     verbose('----------\n')
     verbose("Evaluation")
 
-    # Calculando desempeño
-    print( 'Accuracy              :', accuracy_score(y_, prediction_))
-    print( 'Precision             :', precision_score(y_, prediction_))
-    print( 'Recall                :', recall_score(y_, prediction_))
-    print( 'F-score               :', f1_score(y_, prediction_))
-    print( '\nClasification report:\n', classification_report(y_,
-            prediction_))
-    print( '\nConfussion matrix   :\n',confusion_matrix(y_, prediction_))
+    if opts.mode in ['age','gender']:
+        from sklearn.metrics.metrics import precision_score, recall_score, confusion_matrix, classification_report, accuracy_score, f1_score
+        # Calculando desempeño
+        print( 'Accuracy              :', accuracy_score(y_, prediction_))
+        print( 'Precision             :', precision_score(y_, prediction_))
+        print( 'Recall                :', recall_score(y_, prediction_))
+        print( 'F-score               :', f1_score(y_, prediction_))
+        print( '\nClasification report:\n', classification_report(y_,
+                prediction_))
+        print( '\nConfussion matrix   :\n',confusion_matrix(y_, prediction_))
+    else:
+        from sklearn.metrics.metrics import mean_absolute_error, mean_squared_error,r2_score
+        print( 'Mean Abs Error        :', mean_absolute_error(y_, prediction_))
+        print( 'Mean Sqr Error        :', mean_squared_error(y_, prediction_))
+        print( 'R2 Error              :', r2_score(y_, prediction_))
+        
 
     #plots:
     #import matplotlib.pyplot as plt

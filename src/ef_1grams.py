@@ -51,6 +51,10 @@ if __name__ == "__main__":
         action="store", dest="stopwords",
         help="List of stop words [data/stopwords.txt]")
 
+    p.add_argument("--min",
+        action="store", dest="min",default=10,type=int,
+        help="Define el valor minimo de cuentas ")
+
     opts = p.parse_args()
 
     if opts.verbose:
@@ -88,7 +92,7 @@ if __name__ == "__main__":
         my_stop_words = text.ENGLISH_STOP_WORDS.union(spanish_stop_words)
 
     #Le pasamos las stop words al vectorizer
-    count_vect = CountVectorizer(min_df=10, stop_words=set(my_stop_words))
+    count_vect = CountVectorizer(min_df=opts.min, stop_words=set(my_stop_words))
 
     # - Contamos las palabras en los tweets
     feats = count_vect.fit_transform(np.asarray(tweets))

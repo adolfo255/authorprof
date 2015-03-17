@@ -8,6 +8,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 import numpy as np
 import argparse
 import os
+import codecs
 
 # Local imports
 from load_tweets import load_tweets
@@ -36,6 +37,12 @@ if __name__ == "__main__":
     p.add_argument("-v", "--verbose",
         action="store_true", dest="verbose",
         help="Verbose mode [Off]")
+
+    p.add_argument("--stopwords", default=None,
+        action="store", dest="stopwords",
+        help="List of stop words [data/stopwords.txt]")
+
+
     p.add_argument("--min",
         action="store", dest="min",default=10,type=int,
         help="Define el valor minimo de cuentas ")
@@ -63,9 +70,21 @@ if __name__ == "__main__":
             verbose("Total usuarios : ",len(ids))
 
     # Calculamos los features
+    #metemos las stop words en una lista
+    if not opts.stopwords:
+        my_stop_words=[]
+    else:
+        with codecs.open(opts.stopwords, encoding='utf-8') as f:
+            spanish_stop_words = [line.strip() for line in f]
+            #print (spanish_stop_words)
+
+        from sklearn.feature_extraction import text
+        my_stop_words = text.ENGLISH_STOP_WORDS.union(spanish_stop_words)
+
+
     # - Creamos contador
     from sklearn.feature_extraction.text import TfidfVectorizer
-    tfidf_vect = TfidfVectorizer(min_df=opts.min)
+    tfidf_vect = TfidfVectorizer(min_df=opts.min,stop_words=set(my_stop_words))
     #count_vect = CountVectorizer(min_df=10)
 
     # - Contamos las palabras en los tweets
