@@ -12,5 +12,4 @@ python src/ef_list_frequency.py -p lf_reyes data/pan15/italian data/SentimentAna
 python src/ef_list_baseline.py -p lb_hu data/pan15/italian data/SentimentAnalysisDict/it/Hu-Liu/positives.txt data/SentimentAnalysisDict/it/Hu-Liu/negatives.txt
 python src/ef_list_frequency.py -p lf_hu data/pan15/italian data/SentimentAnalysisDict/it/Hu-Liu/positives.txt data/SentimentAnalysisDict/it/Hu-Liu/negatives.txt
 
-
-python src/develop.py -v -m ex --estimators 100 data/pan15/italian
+python src/develop.py -v -m ex data/pan15/italian
