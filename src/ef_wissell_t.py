@@ -2,18 +2,16 @@
 # -*- coding: utf-8
 from __future__ import print_function
 import argparse
-import codecs
-from sklearn.feature_extraction.text import TfidfVectorizer
 import cPickle as pickle
-from sklearn.feature_extraction.text import CountVectorizer
 import numpy as np
 import os
 import re
+import csv
 
 from load_tweets import load_tweets
 
-NAME='ef_wissell_t'
-prefix='wissell_t'
+NAME='ef_whissell_t'
+prefix='whissell_t'
 
 class Sum(object):
     def __init__(self, *arguments):
@@ -25,13 +23,6 @@ class Sum(object):
     def __iadd__(self, otr):
         nuev_elem = [self.lista[i] + otr.lista[i] for i in range(3)]
         return Sum(*nuev_elem)
-
-
-
-
-
-
-
 
 
 if __name__ == "__main__":
@@ -116,11 +107,11 @@ if __name__ == "__main__":
         sum_per_line.append(acarreo_sum)
 
 
-    print "\nacarreo:\n",sum_per_line
+    print("\nacarreo:\n",sum_per_line)
     
     
     # - Contamos las palabras en los tweets
-    feats = np.asarray(sum_per_line)
+    feats = np.asarray([l.lista for l in sum_per_line])
 
     # Guarda la matrix de features
     with open(os.path.join(opts.dir,opts.pref+'.dat'),'wb') as idxf:

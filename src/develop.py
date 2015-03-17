@@ -47,7 +47,7 @@ if __name__ == "__main__":
     else:   
         verbose = lambda *a: None 
 
-    feats=['1grams','tfidf','lb_reyes','lb_hu','lf_reyes','lf_hu']
+    feats=['1grams','tfidf','lb_reyes','lb_hu','lf_reyes','lf_hu','whissell_t']
 
     if opts.mode=="gender":
         index_y=0
