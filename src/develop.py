@@ -144,10 +144,11 @@ if __name__ == "__main__":
         print(y)
 
     weight=None
-    if opts.weight.startswith('weighted'):
-        weight={0:10,1:1,2:1,3:10}
-    elif opts.weight.startswith('auto'):
-        weight='auto'
+    if opts.weight:
+        if opts.weight.startswith('weighted'):
+            weight={0:100,1:1,2:1,3:10}
+        elif opts.weight.startswith('auto'):
+            weight='auto'
 
 
     kf = KFold(len(y), n_folds=opts.folds)
