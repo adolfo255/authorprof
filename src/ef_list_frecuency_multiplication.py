@@ -2,16 +2,16 @@
 # -*- coding: utf-8
 from __future__ import print_function
 import argparse
-import codecs
 import cPickle as pickle
 import numpy as np
+import csv
 import os
 
 from load_tweets import load_tweets
 from collections import Counter
 
-NAME='ef_list_baseline'
-prefix='list_baseline'
+NAME='ef_list_frequency_multiplication'
+prefix='list_frequency_multiplication'
 
 if __name__ == "__main__":
     # Las opciones de línea de comando
@@ -19,13 +19,10 @@ if __name__ == "__main__":
 
     p.add_argument("DIR",default=None,
         action="store", help="Directory with corpus")
-   
-    p.add_argument("LIST1",default=None,
+
+    p.add_argument("LIST",default=None,
         action="store", help="File with list of words")
-    
-    p.add_argument("LIST2",default=None,
-        action="store", help="File with list of words")
- 
+
     p.add_argument("-d", "--dir",
             action="store_true", dest="dir",default="feats",
         help="Default directory for features [feats]")
@@ -41,7 +38,6 @@ if __name__ == "__main__":
     p.add_argument("--format",
             action="store_true", dest="format",default="pan15",
         help="Change to pan14 to use format from 2015 [feats]")
-    
 
     p.add_argument("-v", "--verbose",
         action="store_true", dest="verbose",
@@ -56,8 +52,8 @@ if __name__ == "__main__":
     if opts.verbose:
         def verbose(*args):
             print(*args)
-    else:   
-        verbose = lambda *a: None 
+    else:
+        verbose = lambda *a: None
 
 
     # Colecta los tweets y sus identificadores (idtweet y idusuario)
@@ -75,21 +71,39 @@ if __name__ == "__main__":
 
     # Calculamos los features
     # - Cargar lista de palabras uno
-    list_of_words1 = [line.strip() for line in codecs.open(opts.LIST1,encoding='utf-8') if 
-                        len(line.strip())>0]
-    list_of_words2 = [line.strip() for line in codecs.open(opts.LIST2,encoding='utf-8') if
-                        len(line.strip())>0]
+    lista_dict = []
+    lista_wights1 = []
+    lista_wights2 =  []
+    lista_wights3= []
+    with open(opts.LIST) as f:
+      for row in csv.reader(f):
+        lista_dict.append(row[0])
+        lista_wights1.append(float(row[1]))
+        lista_wights2.append(float(row[2]))
+        lista_wights3.append(float(row[3]))
 
-    counts = []
-    for i,j in enumerate(tweets):
-            c=Counter(j)
-            countador=sum([c[x] for x in list_of_words1])
-            countador_2=sum([c[x] for x in list_of_words2])
-     
-            counts.append((countador,countador_2))
+    counts=[]
+    for usuario in tweets:
+        usuario=usuario.split()
+        cc=Counter(usuario)
+        vec1=[cc[item] for item in lista_dict]
+
+        vec=vec1
+        counts.append(vec1)
+
+
+    feats = np.asarray(counts)
+
+
+    counts2=[]
+    for vector in feats:
+        results1 = [a*b for a,b in zip(vector,lista_wights1)]+[a*b for a,b in zip(vector,lista_wights2)]+[a*b for a,b in zip(vector,lista_wights3)]
+
+        counts2.append(results1)
+
 
     # - Contamos las palabras en los tweets
-    feats = np.asarray(counts)
+    feats = np.asarray(counts2)
 
     # Guarda la matrix de features
     with open(os.path.join(opts.dir,opts.pref+'.dat'),'wb') as idxf:
@@ -102,6 +116,60 @@ if __name__ == "__main__":
     # Guarda los indices por renglones de la matrix (usuario o tweet, usuario)
     with open(os.path.join(opts.dir,opts.pref+'.idx'),'wb') as idxf:
         pickle.dump(ids, idxf, pickle.HIGHEST_PROTOCOL)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#tweets = [['this is a task a a a a this abandon abandoned abandoned  abated'],['task non this yu']]
+
 
 
 

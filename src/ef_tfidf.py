@@ -4,7 +4,6 @@ from __future__ import print_function
 
 # Importar librerías requeridas
 import cPickle as pickle
-from sklearn.feature_extraction.text import CountVectorizer
 import numpy as np
 import argparse
 import os
@@ -28,24 +27,27 @@ if __name__ == "__main__":
     p.add_argument("-p", "--pref",
             action="store_true", dest="pref",default=prefix,
         help="Prefix to save the file of features %s"%prefix)
+    p.add_argument( "--vect",
+            action="store_true", dest="vect",default=None,
+        help="Training vector file")
     p.add_argument("--mix",
             action="store_true", dest="mix",default=True,
         help="Mix tweets into pefiles")
     p.add_argument("--format",
             action="store_true", dest="format",default="pan15",
         help="Change to pan14 to use format from 2015 [feats]")
-    p.add_argument("-v", "--verbose",
-        action="store_true", dest="verbose",
-        help="Verbose mode [Off]")
-
     p.add_argument("--stopwords", default=None,
         action="store", dest="stopwords",
         help="List of stop words [data/stopwords.txt]")
-
-
+    p.add_argument("--ngram",
+        action="store", dest="ngrammax",default=1,type=int,
+        help="El valor máximo de ngramas ")
     p.add_argument("--min",
         action="store", dest="min",default=10,type=int,
         help="Define el valor minimo de cuentas ")
+    p.add_argument("-v", "--verbose",
+        action="store_true", dest="verbose",
+        help="Verbose mode [Off]")
     opts = p.parse_args()
     
 
@@ -83,16 +85,27 @@ if __name__ == "__main__":
 
 
     # - Creamos contador
-    from sklearn.feature_extraction.text import TfidfVectorizer
-    tfidf_vect = TfidfVectorizer(min_df=opts.min,stop_words=set(my_stop_words))
-    #count_vect = CountVectorizer(min_df=10)
+    if not opts.vect:
+        from sklearn.feature_extraction.text import TfidfVectorizer
+        tfidf_vect = TfidfVectorizer(min_df=opts.min,
+                stop_words=set(my_stop_words),
+                ngram_range=(1,opts.ngrammax))
+        # - Contamos las palabras en los tweets
+        feats = tfidf_vect.fit_transform(np.asarray(tweets))
+    else:
+        with open(opts.vect,"r") as model:
+            s=model.read()
+            tfidf_vect = pickle.loads(s)
+            # - Contamos las palabras en los tweets
+            feats = tfidf_vect.transform(np.asarray(tweets))
 
-    # - Contamos las palabras en los tweets
-    feats = tfidf_vect.fit_transform(np.asarray(tweets))
 
     # Guarda la matrix de features
     with open(os.path.join(opts.dir,prefix+'.dat'),'wb') as idxf:
         pickle.dump(feats, idxf, pickle.HIGHEST_PROTOCOL)
+
+    with open(os.path.join(opts.dir,prefix+'.vec'),'wb') as idxf:
+        pickle.dump(tfidf_vect, idxf, pickle.HIGHEST_PROTOCOL)
 
     # Imprimimos información de la matrix
     verbose("First feats names :",tfidf_vect.get_feature_names()[:10])

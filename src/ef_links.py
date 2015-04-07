@@ -84,6 +84,10 @@ if __name__ == "__main__":
             action="store_true", dest="pref",default=prefix,
         help="Prefix to save the file of features %s"%prefix)
     
+    p.add_argument("-l", "--links",
+            action="store_true", dest="links",default=None,
+        help="Links list to read from")
+    
 
     p.add_argument("--mix",
             action="store_true", dest="mix",default=True,
@@ -128,13 +132,15 @@ if __name__ == "__main__":
     # Calculamos los features
     # - Creamos contador
     
-    
-
-
     for user in tweets:
 	buscar(user)
-	
-    link_list = links.keys()
+
+    if not opts.links:
+        link_list = links.keys()
+    else:
+        with open(opts.links,"r") as model:
+            s=model.read()
+            link_list = pickle.loads(s)
     matriz()
 
     # - Contamos las palabras en los tweets
@@ -152,4 +158,8 @@ if __name__ == "__main__":
     # Guarda los indices por renglones de la matrix (usuario o tweet, usuario)
     with open(os.path.join(opts.dir,prefix+'.idx'),'wb') as idxf:
         pickle.dump(ids, idxf, pickle.HIGHEST_PROTOCOL)
+
+    # Guarda los links  de la matrix (usuario o tweet, usuario)
+    with open(os.path.join(opts.dir,prefix+'.links'),'wb') as idxf:
+        pickle.dump(link_list, idxf, pickle.HIGHEST_PROTOCOL)
 
