@@ -25,6 +25,9 @@ if __name__ == "__main__":
     p.add_argument("-m", "--mode",type=str,
         action="store", dest="mode",default="gender",
         help="Mode (gender|age|extroverted|stable|agreeable|conscientious|open) [gender]")
+    p.add_argument("-w", "--weight",type=str,
+        action="store", dest="weight",default=None,
+        help="Weight (weighted|auto)")
     p.add_argument("-f", "--folds",type=int,
         action="store", dest="folds",default=20,
         help="Folds during cross validation [20]")
@@ -47,7 +50,7 @@ if __name__ == "__main__":
     else:   
         verbose = lambda *a: None 
 
-    feats=['1grams','tfidf','lb_reyes','lb_hu','lf_reyes','lf_hu','whissell_t','links','list_emoticons','list_punctuation']
+    feats=['1grams','tfidf','lb_reyes','lb_hu','lf_reyes','lf_hu','whissell_t','links','list_emoticons','list_punctuation','sentiword']
 
     if opts.mode=="gender":
         index_y=0
@@ -140,6 +143,12 @@ if __name__ == "__main__":
         y=np.array([float(l) for l in y_labels])
         print(y)
 
+    weight=None
+    if opts.weight.startswith('weighted'):
+        weight={0:10,1:1,2:1,3:10}
+    elif opts.weight.startswith('auto'):
+        weight='auto'
+
 
     kf = KFold(len(y), n_folds=opts.folds)
     y_=[]
@@ -153,7 +162,8 @@ if __name__ == "__main__":
             # Preparando la máquina de aprendizaje
             verbose("   Training fold   (%i)"%(i+1))
             from sklearn.ensemble import RandomForestClassifier
-            classifier=RandomForestClassifier(n_estimators=opts.estimators)
+            classifier=RandomForestClassifier(n_estimators=opts.estimators,
+                class_weight=weight)
 
             # Aprendiendo
             classifier.fit(X_train, y_train)
