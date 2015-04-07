@@ -3,14 +3,12 @@
 from __future__ import print_function
 import argparse
 import codecs
-from sklearn.feature_extraction.text import TfidfVectorizer
 import cPickle as pickle
-from sklearn.feature_extraction.text import CountVectorizer
 import numpy as np
 import os
-import re
 
 from load_tweets import load_tweets
+from collections import Counter
 
 NAME='ef_list_baseline'
 prefix='list_baseline'
@@ -84,8 +82,9 @@ if __name__ == "__main__":
 
     counts = []
     for i,j in enumerate(tweets):
-            countador=sum([j.count(x) for x in list_of_words1])
-            countador_2=sum([j.count(x) for x in list_of_words2])
+            c=Counter(j)
+            countador=sum([c[x] for x in list_of_words1])
+            countador_2=sum([c[x] for x in list_of_words2])
      
             counts.append((countador,countador_2))
 

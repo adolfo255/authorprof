@@ -2,13 +2,13 @@
 # -*- coding: utf-8
 from __future__ import print_function
 import argparse
-import codecs
 import cPickle as pickle
 import numpy as np
 import csv
 import os
 
 from load_tweets import load_tweets
+from collections import Counter
 
 NAME='ef_list_frequency_multiplication'
 prefix='list_frequency_multiplication'
@@ -85,7 +85,8 @@ if __name__ == "__main__":
     counts=[]
     for usuario in tweets:
         usuario=usuario.split()
-        vec1=[usuario.count(item) for item in lista_dict]
+        cc=Counter(usuario)
+        vec1=[cc[item] for item in lista_dict]
 
         vec=vec1
         counts.append(vec1)

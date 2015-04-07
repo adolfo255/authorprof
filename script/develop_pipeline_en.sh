@@ -1,7 +1,7 @@
 #!/bin/bash
 
 mode="gender"
-echo "Running training authorid"
+echo "Running training authorprof"
 while getopts m: opt; do
 	case $opt in
 	m)

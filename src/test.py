@@ -9,11 +9,6 @@ import numpy as np
 import argparse
 import os
 
-
-from sklearn.metrics.metrics import accuracy_score
-from sklearn.cross_validation import KFold
-
-
 # Variables de configuaración
 NAME='develop'
 
@@ -22,6 +17,9 @@ if __name__ == "__main__":
     p = argparse.ArgumentParser(NAME)
     p.add_argument("DIR",default=None,
         action="store", help="Directory with corpus")
+    p.add_argument("", "--model",type=str,
+        action="store", dest="model",default="model.dat",
+        help="Model name")
     p.add_argument("-m", "--mode",type=str,
         action="store", dest="mode",default="gender",
         help="Mode (gender|age|extroverted|stable|agreeable|conscientious|open) [gender]")
@@ -141,82 +139,27 @@ if __name__ == "__main__":
         print(y)
 
 
-    kf = KFold(len(y), n_folds=opts.folds)
     y_=[]
     prediction_=[]
-    verbose("Cross validation:")
-    for i,(train,test) in enumerate(kf):
-        # Cortando datos en training y test
-        X_train, X_test, y_train, y_test = x[train],x[test],y[train],y[test]
-
-        if opts.mode in ['age','gender']:
-            # Preparando la máquina de aprendizaje
-            verbose("   Training fold   (%i)"%(i+1))
-            from sklearn.ensemble import RandomForestClassifier
-            classifier=RandomForestClassifier(n_estimators=opts.estimators)
-
-            # Aprendiendo
-            classifier.fit(X_train, y_train)
-
-            # Prediciendo
-            verbose("   Predicting fold (%i)"%(i+1))
-            prediction = classifier.predict(X_test)
+    verbose("Predicting")
+    X_test = x
+    with open(opts.model,"r") as model:
+        s=model.read()
+        model = pickle.loads(s)
         
-            verbose('   Accuracy fold   (%i):'%(i+1), accuracy_score(y_test, prediction))
-            y_.extend(y_test)
-            prediction_.extend(prediction)
-
-        else:
-             # Preparando la máquina de aprendizaje
-            verbose("   Regressing fold   (%i)"%(i+1))
-            from sklearn.ensemble import RandomForestRegressor
-            regressor=RandomForestRegressor(n_estimators=opts.estimators)
-
-            # Aprendiendo
-            regressor.fit(X_train, y_train)
-
-            # Prediciendo
-            verbose("   Predicting fold (%i)"%(i+1))
-            prediction = regressor.predict(X_test)
-        
-            y_.extend(y_test)
-            prediction_.extend(prediction)
-
-
-        
-    verbose('----------\n')
-    verbose("Evaluation")
 
     if opts.mode in ['age','gender']:
-        from sklearn.metrics.metrics import precision_score, recall_score, confusion_matrix, classification_report, accuracy_score, f1_score
-        # Calculando desempeño
-        print( 'Accuracy              :', accuracy_score(y_, prediction_))
-        print( 'Precision             :', precision_score(y_, prediction_))
-        print( 'Recall                :', recall_score(y_, prediction_))
-        print( 'F-score               :', f1_score(y_, prediction_))
-        print( '\nClasification report:\n', classification_report(y_,
-                prediction_))
-        print( '\nConfussion matrix   :\n',confusion_matrix(y_, prediction_))
+        # Aprendiendo
+        classifier=model
+        # Prediciendo
+        prediction = classifier.predict(X_test)
     else:
-        from sklearn.metrics.metrics import mean_absolute_error, mean_squared_error,r2_score
-        print( 'Mean Abs Error        :', mean_absolute_error(y_, prediction_))
-        print( 'Mean Sqr Error        :', mean_squared_error(y_, prediction_))
-        print( 'R2 Error              :', r2_score(y_, prediction_))
-        
-
-    #plots:
-    #import matplotlib.pyplot as plt
-    #confusion_matrix_plot = confusion_matrix(y_test, prediction)
-    #plt.title('matriz de confusion')
-    #plt.colorbar()
-    #plt.xlabel()
-    #plt.xlabel('categoria de verdad')
-    #plt.ylabel('categoria predecida')
-    #plt.show()
-
-      
-        
-
-
+        # Aprendiendo
+        regressor=model
+        # Prediciendo
+        prediction = regressor.predict(X_test)
+    
+        prediction_.extend(prediction)
+    print(prediction)
 
 

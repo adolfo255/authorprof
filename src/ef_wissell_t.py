@@ -103,12 +103,8 @@ if __name__ == "__main__":
                 acarreo_sum += sum
             except KeyError:
                 pass
-        print("\n%s En la lista:: %s" % (acarreo_sum, x))
         sum_per_line.append(acarreo_sum)
 
-
-    print("\nacarreo:\n",sum_per_line)
-    
     
     # - Contamos las palabras en los tweets
     feats = np.asarray([l.lista for l in sum_per_line])
