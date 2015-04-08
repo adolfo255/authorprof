@@ -145,10 +145,15 @@ if __name__ == "__main__":
 
     weight=None
     if opts.weight:
-        if opts.weight.startswith('weighted'):
-            weight={0:100,1:1,2:1,3:10}
-        elif opts.weight.startswith('auto'):
+        if opts.weight.startswith('auto'):
             weight='auto'
+        else:
+            with open(opts.weight) as wf:
+                weight={}
+                for line in wf:
+                    line=line.strip().split()
+                    weight[int(line[0])]=float(line[1])
+       
 
 
     kf = KFold(len(y), n_folds=opts.folds)
