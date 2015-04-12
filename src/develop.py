@@ -141,7 +141,6 @@ if __name__ == "__main__":
         y=np.array([ labels.index(label) for label in y_labels])
     else:
         y=np.array([float(l) for l in y_labels])
-        print(y)
 
     weight=None
     if opts.weight:
