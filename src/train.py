@@ -8,6 +8,7 @@ import scipy
 import numpy as np
 import argparse
 import os
+from config import feats
 
 # Variables de configuaración
 NAME='train'
@@ -20,14 +21,11 @@ if __name__ == "__main__":
     p.add_argument("-m", "--mode",type=str,
         action="store", dest="mode",default="gender",
         help="Mode (gender|age|extroverted|stable|agreeable|conscientious|open) [gender]")
-    p.add_argument("", "--model",type=str,
-        action="store", dest="model",default="model.dat",
+    p.add_argument("--model",type=str,
+        action="store", dest="model",default="model.model",
         help="Model name")
-    p.add_argument("-f", "--folds",type=int,
-        action="store", dest="folds",default=20,
-        help="Folds during cross validation [20]")
-    p.add_argument("-d", "--dir",
-        action="store_true", dest="dir",default="feats",
+    p.add_argument("-d", "--dir",type=str,
+        action="store", dest="dir",default="feats",
         help="Default directory for features [feats]")
     p.add_argument("-v", "--verbose",
         action="store_true", dest="verbose",
@@ -44,8 +42,6 @@ if __name__ == "__main__":
             print(*args)
     else:   
         verbose = lambda *a: None 
-
-    feats=['1grams','tfidf','lb_reyes','lb_hu','lf_reyes','lf_hu','whissell_t','links']
 
     if opts.mode=="gender":
         index_y=0
@@ -76,6 +72,7 @@ if __name__ == "__main__":
         verbose('Loading:', feat)
         # Lee los indices de los rengloes
         try:
+            print(os.path.join(opts.dir,feat+'.idx'))
             with open(os.path.join(opts.dir,feat+'.idx'),'rb') as idxf:
                 ids = pickle.load(idxf)
         except IOError:
@@ -96,7 +93,6 @@ if __name__ == "__main__":
         verbose("Rows     :", x_.shape[0] )
         verbose("Features :", x_.shape[1] )
         verbose('----------\n')
-
 
     x=np.hstack(x)
 
@@ -160,7 +156,7 @@ if __name__ == "__main__":
 
     stream_model = pickle.dumps(model)
     verbose("Saving model into ",opts.model)
-    with open(opts.model,"w") as modelf:
+    with open(os.path.join(opts.dir,opts.model),"w") as modelf:
         modelf.write(stream_model)
 
 

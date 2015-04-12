@@ -2,7 +2,7 @@
 
 mode="gender"
 est=2000
-echo "Running training authorprof"
+echo "Running testing authorprof en"
 while getopts m: opt; do
 	case $opt in
 	m)
@@ -16,16 +16,12 @@ while getopts m: opt; do
 	done
 
 
-
-rm $2/*.idx
-rm $2/*.dat
-
 # ------------  Based on vocabulary
 # tfidf
-python src/ef_tfidf.py --stopwords data/stop_words/stop_words_en.txt $1
+python src/ef_tfidf.py --vect $2/tfidf.vec --stopwords data/stop_words/stop_words_en.txt $1
 
 # Extrae links
-python src/ef_links.py $1
+python src/ef_links.py -l $2/links.vec  $1
 
 # ------------ Bades on lists
 # Usando listas de positivos y negativos
@@ -54,10 +50,12 @@ bash script/tag_english.sh $1/
 python src/ef_pos.py $1
 
 # gender
-python src/develop.py --estimators ${est} -v $1
-python src/develop.py --estimators ${est}  -m age -w weights/en_gender.txt -v $1
-python src/develop.py --estimators ${est}  -m ex -v $1
-python src/develop.py --estimators ${est}  -m st -v $1
-python src/develop.py --estimators ${est}  -m op -v $1
-python src/develop.py --estimators ${est}  -m co -v $1
-python src/develop.py --estimators ${est}  -m agre -v $1
+python src/test.py --model model_ge.model -d $2 --estimators ${est} -v $1 > $3/res_gender.txt
+python src/test.py --model model_age.model -d $2 --estimators ${est}  -m age -w weights/en_gender.txt -v $1 > $3/res_age.txt
+python src/test.py --model model_ex.model -d $2 --estimators ${est}  -m ex -v $1> $3/res_ex.txt
+python src/test.py --model model_st.model -d $2 --estimators ${est}  -m st -v $1> $3/res_st.txt
+python src/test.py --model model_op.model -d $2 --estimators ${est}  -m op -v $1> $3/res_op.txt
+python src/test.py --model model_co.model -d $2 --estimators ${est}  -m co -v $1> $3/res_co.txt
+python src/test.py --model model_agr.model -d $2 --estimators ${est}  -m agre -v $1> $3/res_agr.txt
+
+

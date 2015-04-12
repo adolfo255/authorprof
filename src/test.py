@@ -8,6 +8,7 @@ import scipy
 import numpy as np
 import argparse
 import os
+from config import feats
 
 # Variables de configuaración
 NAME='develop'
@@ -17,7 +18,7 @@ if __name__ == "__main__":
     p = argparse.ArgumentParser(NAME)
     p.add_argument("DIR",default=None,
         action="store", help="Directory with corpus")
-    p.add_argument("", "--model",type=str,
+    p.add_argument("--model",type=str,
         action="store", dest="model",default="model.dat",
         help="Model name")
     p.add_argument("-m", "--mode",type=str,
@@ -27,7 +28,7 @@ if __name__ == "__main__":
         action="store", dest="folds",default=20,
         help="Folds during cross validation [20]")
     p.add_argument("-d", "--dir",
-        action="store_true", dest="dir",default="feats",
+        action="store", dest="dir",default="feats",
         help="Default directory for features [feats]")
     p.add_argument("-v", "--verbose",
         action="store_true", dest="verbose",
@@ -44,8 +45,6 @@ if __name__ == "__main__":
             print(*args)
     else:   
         verbose = lambda *a: None 
-
-    feats=['1grams','tfidf','lb_reyes','lb_hu','lf_reyes','lf_hu','whissell_t','links']
 
     if opts.mode=="gender":
         index_y=0
@@ -143,7 +142,7 @@ if __name__ == "__main__":
     prediction_=[]
     verbose("Predicting")
     X_test = x
-    with open(opts.model,"r") as model:
+    with open(os.path.join(opts.dir,opts.model),"rb") as model:
         s=model.read()
         model = pickle.loads(s)
         
@@ -160,6 +159,8 @@ if __name__ == "__main__":
         prediction = regressor.predict(X_test)
     
         prediction_.extend(prediction)
-    print(prediction)
+
+    for x,y in zip(ids,prediction):
+        print(x,y)
 
 

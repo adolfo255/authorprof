@@ -17,8 +17,7 @@ while getopts m: opt; do
 
 
 
-rm $2/*.idx
-rm $2/*.dat
+rm $2/*
 
 # ------------  Based on vocabulary
 # tfidf
@@ -54,10 +53,12 @@ bash script/tag_english.sh $1/
 python src/ef_pos.py $1
 
 # gender
-python src/develop.py --estimators ${est} -v $1
-python src/develop.py --estimators ${est}  -m age -w weights/en_gender.txt -v $1
-python src/develop.py --estimators ${est}  -m ex -v $1
-python src/develop.py --estimators ${est}  -m st -v $1
-python src/develop.py --estimators ${est}  -m op -v $1
-python src/develop.py --estimators ${est}  -m co -v $1
-python src/develop.py --estimators ${est}  -m agre -v $1
+python src/train.py --model model_ge.model -d $2 --estimators ${est} -v $1
+python src/train.py --model model_age.model -d $2 --estimators ${est}  -m age -w weights/en_gender.txt -v $1
+python src/train.py --model model_ex.model -d $2 --estimators ${est}  -m ex -v $1
+python src/train.py --model model_st.model -d $2 --estimators ${est}  -m st -v $1
+python src/train.py --model model_op.model -d $2 --estimators ${est}  -m op -v $1
+python src/train.py --model model_co.model -d $2 --estimators ${est}  -m co -v $1
+python src/train.py --model model_agr.model -d $2 --estimators ${est}  -m agre -v $1
+
+

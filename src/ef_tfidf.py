@@ -22,13 +22,13 @@ if __name__ == "__main__":
     p.add_argument("DIR",default=None,
         action="store", help="Directory with corpus with json")
     p.add_argument("-d", "--dir",
-            action="store_true", dest="dir",default="feats",
+            action="store", dest="dir",default="feats",
         help="Default directory for features [feats]")
     p.add_argument("-p", "--pref",
             action="store_true", dest="pref",default=prefix,
         help="Prefix to save the file of features %s"%prefix)
     p.add_argument( "--vect",
-            action="store_true", dest="vect",default=None,
+            action="store", dest="vect",default=None,
         help="Training vector file")
     p.add_argument("--mix",
             action="store_true", dest="mix",default=True,

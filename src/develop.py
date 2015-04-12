@@ -9,6 +9,7 @@ import numpy as np
 import argparse
 import os
 
+from config import feats
 
 from sklearn.metrics.metrics import accuracy_score
 from sklearn.cross_validation import KFold
@@ -32,7 +33,7 @@ if __name__ == "__main__":
         action="store", dest="folds",default=20,
         help="Folds during cross validation [20]")
     p.add_argument("-d", "--dir",
-        action="store_true", dest="dir",default="feats",
+        action="store", dest="dir",default="feats",
         help="Default directory for features [feats]")
     p.add_argument("-v", "--verbose",
         action="store_true", dest="verbose",
@@ -49,8 +50,6 @@ if __name__ == "__main__":
             print(*args)
     else:   
         verbose = lambda *a: None 
-
-    feats=['1grams','tfidf','lb_reyes','lb_hu','lf_reyes','lf_hu','whissell_t','links','list_emoticons','list_punctuation','sentiword']
 
     if opts.mode=="gender":
         index_y=0
@@ -155,7 +154,7 @@ if __name__ == "__main__":
        
 
 
-    kf = KFold(len(y), n_folds=opts.folds)
+    kf = KFold(len(y), n_folds=opts.folds,shuffle=True)
     y_=[]
     prediction_=[]
     verbose("Cross validation:")
