@@ -152,6 +152,7 @@ if __name__ == "__main__":
          # Preparando la máquina de aprendizaje
         from sklearn.ensemble import RandomForestRegressor
         regressor=RandomForestRegressor(n_estimators=opts.estimators)
+        regressor.fit(X_train, y_train)
         model = regressor
 
     stream_model = pickle.dumps(model)
