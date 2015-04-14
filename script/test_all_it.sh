@@ -18,7 +18,7 @@ while getopts m: opt; do
 
 # ------------  Based on vocabulary
 # tfidf
-python src/ef_tfidf.py -d $2 --vect $2/tfidf.vec -stopwords data/stop_words/stop_words_it.txt $1
+python src/ef_tfidf.py -d $2 --vect $2/tfidf.vec --stopwords data/stop_words/stop_words_it.txt $1
 
 # Extrae links
 python src/ef_links.py -l $2/links.vec  -d $2  $1

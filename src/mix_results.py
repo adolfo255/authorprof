@@ -47,7 +47,10 @@ if __name__ == "__main__":
         xml=xml_.format(user=user,lang=opts.lang)
         for label,labeling in labels.iteritems():
             if label=="gender":
-                xml+='gender="{0}"\n'.format(labeling[user])
+                if labeling[user].startswith('f'):
+                    xml+='gender="female"\n'
+                else:
+                    xml+='gender="male"\n'
             elif label=="age":
                 xml+='age_group="{0}"\n'.format(labeling[user])
             elif label.startswith("ex"):
