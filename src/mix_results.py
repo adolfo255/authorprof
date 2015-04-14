@@ -18,7 +18,7 @@ if __name__ == "__main__":
     # Las opciones de línea de comando
     p = argparse.ArgumentParser(NAME)
     p.add_argument("DIR",default=None,
-        action="store", help="Directory with corpus")
+        action="store", help="Output directory")
     p.add_argument("-l",type=str,nargs=2,
         action="append", dest="options",default=[],
         help="Mode (gender|age|extroverted|stable|agreeable|conscientious|open) [gender]")
@@ -39,32 +39,22 @@ if __name__ == "__main__":
         verbose = lambda *a: None 
 
     labels={}
-    for label,filename in izip(opts.options,opts.options):
+    for label,filename in opts.options:
         labeling={}
         for line in open(filename):
             line=line.strip().split()
             labeling[line[0]]=line[1]
         labels[label]=labeling
         
-    xml_='<author id="{user}"\ntype="twitter"\nlang="{lang}"'
+    xml_='<author id="{user}"\ntype="twitter"\nlang="{lang}\n"'
 
     for user in labels['gender'].keys():
         xml=xml_.format(user=user,lang=opts.lang)
         for label,labeling in labels.iteritems():
             if label=="gender":
-                if labeling['user']=='0':
-                    xml+='gender="male"\n'
-                else:
-                    xml+='gender="female"\n'
+                xml+='gender="{0}"\n'.format(labeling[user])
             elif label=="age":
-                if labeling[user]=='0':
-                    xml+='age_group="18-24"\n'
-                elif labeling[user]=='1':
-                    xml+='age_group="15-34"\n'
-                elif labeling[user]=='2':
-                    xml+='age_group="35-49"\n'
-                else:
-                    xml+='age_group="50-xx"\n'
+                xml+='age_group="{0}"\n'.format(labeling[user])
             elif label.startswith("ex"):
                 xml+='extroverted="{0}"\n'.format(labeling[user])
             elif label.startswith("st"):
@@ -74,6 +64,8 @@ if __name__ == "__main__":
             elif label.startswith("co"):
                 xml+='conscientious="{0}"\n'.format(labeling[user])
             elif label.startswith("op"):
-                xml+='open="{0}"\n'.format(labeling[user])
+                xml+='open="{0}"'.format(labeling[user])
         xml=xml+'\n/>'
+        with open(os.path.join(opts.DIR,user+'.xml'),'w') as ff:
+            ff.write(xml)
 

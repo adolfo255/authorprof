@@ -151,10 +151,16 @@ if __name__ == "__main__":
         
 
     if opts.mode in ['age','gender']:
+        with open(os.path.join(opts.dir,opts.mode+'.labels'),'rb') as idxf:
+            s=idxf.read()
+            labels = pickle.loads(s)
+
+
         # Aprendiendo
         classifier=model
         # Prediciendo
         prediction = classifier.predict(X_test)
+        prediction = [labels[i] for i in prediction]
     else:
         # Aprendiendo
         regressor=model

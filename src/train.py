@@ -131,11 +131,15 @@ if __name__ == "__main__":
         for label in labels:
             verbose("Label",label,"-->",labels.index(label))
         verbose('----------\n')
-
+ 
         # Creando el vector de etiquetas
         y=np.array([ labels.index(label) for label in y_labels])
+        with open(os.path.join(opts.dir,opts.mode+'.labels'),'wb') as idxf:
+            pickle.dump(labels, idxf, pickle.HIGHEST_PROTOCOL)
     else:
         y=np.array([float(l) for l in y_labels])
+
+    
 
     weight=None
     if opts.weight:
