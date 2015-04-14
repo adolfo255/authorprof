@@ -37,10 +37,11 @@ python src/ef_list_punctuation.py -d $2 $1 data/punctuation.txt
 python src/ef_statistics.py -d $2 -v $1
 
 # POS
-cp -r data/pan15/dutch $2
-python src/extract_text.py $2/$1
-bash script/tag_dutch.sh $2/$1
-python src/ef_pos.py -d $2 --tag 2 $2/$1
+cp -r $1 $2
+FILE=`basename $1`
+python src/extract_text.py $2/$FILE
+bash script/tag_dutch.sh $2/$FILE
+python src/ef_pos.py -d $2 --tag 2 $2/$FILE
 
 
 # gender

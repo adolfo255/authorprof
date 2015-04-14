@@ -3,9 +3,9 @@
 testdir=
 
 echo "Running training authorprof"
-while getopts i:o:m: opt; do
+while getopts c:o:m: opt; do
 	case $opt in
-	i)
+	c)
 		testdir=$OPTARG
 		;;
 	o)

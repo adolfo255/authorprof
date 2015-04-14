@@ -5,12 +5,12 @@ outdir=
 model='feats'
 
 echo "Running testing authorid"
-while getopts i:o:m: opt; do
+while getopts c:o:r: opt; do
 	case $opt in
-	i)
+	c)
 		testdir=$OPTARG
 		;;
-	m)
+	r)
 		modeldir=$OPTARG
 		;;
 	o)
