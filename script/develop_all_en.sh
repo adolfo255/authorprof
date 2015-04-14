@@ -46,9 +46,10 @@ python src/ef_wissell_t.py data/pan15/english/ data/SentimentAnalysisDict/en/Whi
 python src/ef_statistics.py -v data/pan15/english
 
 # POS
-python src/extract_text.py data/pan15/english/
-bash script/tag_english.sh data/pan15/english/
-python src/ef_pos.py data/pan15/english
+cp -r data/pan15/english $2
+python src/extract_text.py $2/data/pan15/english/
+bash script/tag_english.sh $2/data/pan15/english/
+python src/ef_pos.py $2/data/pan15/english
 
 
 # gender

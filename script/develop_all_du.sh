@@ -36,9 +36,10 @@ python src/ef_list_punctuation.py data/pan15/dutch data/punctuation.txt
 python src/ef_statistics.py -v data/pan15/dutch
 
 # POS
-python src/extract_text.py data/pan15/dutch/
-bash script/tag_dutch.sh data/pan15/dutch/
-python src/ef_pos.py --tag 2 data/pan15/dutch
+cp -r data/pan15/dutch $2
+python src/extract_text.py $2/data/pan15/dutch/
+bash script/tag_dutch.sh $2/data/pan15/dutch/
+python src/ef_pos.py --tag 2 $2/data/pan15/dutch
 
 
 # gender
