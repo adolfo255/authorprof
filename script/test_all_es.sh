@@ -2,7 +2,7 @@
 
 mode="gender"
 est=2000
-echo "Running training authorprof"
+echo "Running testing authorprof en"
 while getopts m: opt; do
 	case $opt in
 	m)
@@ -15,7 +15,6 @@ while getopts m: opt; do
 	esac
 	done
 
-rm feats/*.idx
 # ------------  Based on vocabulary
 # tfidf
 python src/ef_tfidf.py --stopwords data/stop_words/stop_words_es.txt $1
@@ -45,14 +44,13 @@ python src/extract_text.py $1/
 bash script/tag_spanish.sh $1/
 python src/ef_pos.py $1
 
-
 # gender
-python src/develop.py --estimators ${est} -v $1
-python src/develop.py --estimators 300  -m age  -v $1
-python src/develop.py --estimators ${est}  -m ex -v $1
-python src/develop.py --estimators ${est}  -m st -v $1
-python src/develop.py --estimators ${est}  -m op -v $1
-python src/develop.py --estimators ${est}  -m co -v $1
-python src/develop.py --estimators ${est}  -m agre -v $1
+python src/test.py --model model_ge.model -d $2 --estimators ${est} -v $1 > $3/res_gender.txt
+python src/test.py --model model_age.model -d $2 --estimators ${est}  -m age -v $1 > $3/res_age.txt
+python src/test.py --model model_ex.model -d $2 --estimators ${est}  -m ex -v $1> $3/res_ex.txt
+python src/test.py --model model_st.model -d $2 --estimators ${est}  -m st -v $1> $3/res_st.txt
+python src/test.py --model model_op.model -d $2 --estimators ${est}  -m op -v $1> $3/res_op.txt
+python src/test.py --model model_co.model -d $2 --estimators ${est}  -m co -v $1> $3/res_co.txt
+python src/test.py --model model_agr.model -d $2 --estimators ${est}  -m agre -v $1> $3/res_agr.txt
 
 

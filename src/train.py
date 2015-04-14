@@ -21,6 +21,10 @@ if __name__ == "__main__":
     p.add_argument("-m", "--mode",type=str,
         action="store", dest="mode",default="gender",
         help="Mode (gender|age|extroverted|stable|agreeable|conscientious|open) [gender]")
+    p.add_argument("-w", "--weight",type=str,
+        action="store", dest="weight",default=None,
+        help="Weight (weighted|auto)")
+ 
     p.add_argument("--model",type=str,
         action="store", dest="model",default="model.model",
         help="Model name")
@@ -132,26 +136,41 @@ if __name__ == "__main__":
         y=np.array([ labels.index(label) for label in y_labels])
     else:
         y=np.array([float(l) for l in y_labels])
-        print(y)
 
-
+    weight=None
+    if opts.weight:
+        if opts.weight.startswith('auto'):
+            weight='auto'
+        else:
+            with open(opts.weight) as wf:
+                weight={}
+                for line in wf:
+                    line=line.strip().split()
+                    weight[int(line[0])]=float(line[1])
+     
     y_=[]
     prediction_=[]
     verbose("Training")
     X_train, y_train = x,y
 
+
     if opts.mode in ['age','gender']:
         # Preparando la máquina de aprendizaje
         from sklearn.ensemble import RandomForestClassifier
-        classifier=RandomForestClassifier(n_estimators=opts.estimators)
+        classifier=RandomForestClassifier(n_estimators=opts.estimators,
+            class_weight=weight)
 
         # Aprendiendo
         classifier.fit(X_train, y_train)
         model = classifier
+
+
     else:
          # Preparando la máquina de aprendizaje
         from sklearn.ensemble import RandomForestRegressor
         regressor=RandomForestRegressor(n_estimators=opts.estimators)
+
+        # Aprendiendo
         regressor.fit(X_train, y_train)
         model = regressor
 

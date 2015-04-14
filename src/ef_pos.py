@@ -39,6 +39,9 @@ if __name__ == "__main__":
     p.add_argument("--stopwords", default=None,
         action="store", dest="stopwords",
         help="List of stop words [data/stopwords.txt]")
+    p.add_argument("--tag",
+        action="store", dest="tag",default=1,type=int,
+        help="Position of pos tag ")
     p.add_argument("--ngram",
         action="store", dest="ngrammax",default=1,type=int,
         help="El valor máximo de ngramas ")
@@ -90,7 +93,7 @@ if __name__ == "__main__":
         tagged.append([])
         for line in\
             codecs.open(os.path.join(opts.DIR,idd+".txt_tag"),'r','utf-8'):
-                tagged[-1].append(line.strip().split()[-1])
+                tagged[-1].append(line.strip().split()[-opts.tag])
 
     tagged=[" ".join(t) for t in tagged]
 

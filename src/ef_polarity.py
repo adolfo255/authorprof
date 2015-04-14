@@ -23,6 +23,9 @@ if __name__ == "__main__":
     p.add_argument("-d", "--dir",
             action="store_true", dest="dir",default="feats",
         help="Default directory for features [feats]")
+    p.add_argument("--deli",
+            action="store", dest="deli",default=None,
+        help="Delimeter [None]")
     p.add_argument("-p", "--pref",
             action="store", dest="pref",default=prefix,
         help="Prefix to save the file of features %s"%prefix)
@@ -54,12 +57,12 @@ if __name__ == "__main__":
     # Imprime alguna información sobre los tweets
     if opts.verbose:
         for i,tweet in enumerate(tweets[:10]):
-            verbose('Tweet example',i+1,tweet[:100])
-        verbose("Total tweets   : ",len(tweets))
+            verbose(u'Tweet example',i+1,tweet[:100])
+        verbose(u"Total tweets   : ",len(tweets))
         try:
-            verbose("Total usuarios : ",len(set([id for x,id in ids])))
+            verbose(u"Total usuarios : ",len(set([id for x,id in ids])))
         except ValueError:
-            verbose("Total usuarios : ",len(ids))
+            verbose(u"Total usuarios : ",len(ids))
 
     # Calculamos los features
     # - Cargar lista de palabras uno
@@ -67,8 +70,12 @@ if __name__ == "__main__":
     words=[]
     for line in codecs.open(opts.LIST1,encoding='utf-8'):
         line=line.strip()
-        bits=line.split()
-        words.append((bits[0],float(bits[1])))
+        if not opts.deli:
+            bits=line.split()
+            words.append((" ".join(bits[:-1]),float(bits[-1])))
+        else:
+            bits=line.split(opts.deli)
+            words.append((bits[0],float(bits[-1])))
 
     tweet_counts=[]
     for tweet in tweets:

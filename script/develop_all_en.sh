@@ -15,10 +15,7 @@ while getopts m: opt; do
 	esac
 	done
 
-
-
-rm $2/*.idx
-rm $2/*.dat
+rm $2/*
 
 # ------------  Based on vocabulary
 # tfidf
@@ -52,6 +49,7 @@ python src/ef_statistics.py -v $1
 python src/extract_text.py $1/
 bash script/tag_english.sh $1/
 python src/ef_pos.py $1
+
 
 # gender
 python src/develop.py --estimators ${est} -v $1

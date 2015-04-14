@@ -25,13 +25,24 @@ then
 	cp /tmp/model_en.tgz .
 	popd
 fi
-if [[ $LANG == *"Spanish"* ]]
+if [[ $LANG == *"lang=\"es\""* ]]
 then
-	echo hola
+	bash script/train_all_es.sh ${testdir} ${outdir}
+	# Compreses model
+	pushd ${outdir}
+	tar -czvf /tmp/model_es.tgz .
+	cp /tmp/model_es.tgz .
+	popd
 fi
-if [[ $LANG == *"Greek"* ]]
+if [[ $LANG == *"lang=\"it\""* ]]
 then
-	echo adios
+	bash script/train_all_it.sh ${testdir} ${outdir}
+	# Compreses model
+	pushd ${outdir}
+	tar -czvf /tmp/model_it.tgz .
+	cp /tmp/model_it.tgz .
+	popd
+
 fi
 if [[ $LANG == *"Dutch"* ]]
 then

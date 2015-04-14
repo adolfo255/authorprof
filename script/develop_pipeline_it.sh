@@ -10,8 +10,7 @@ while getopts m: opt; do
 	esac
 	done
 
-rm feats/*.idx
-rm feats/*.dat
+rm feats/*
 
 #python src/ef_1grams.py data/pan15/italian
 python src/ef_tfidf.py --stopwords data/stop_words/stop_words_it.txt data/pan15/italian

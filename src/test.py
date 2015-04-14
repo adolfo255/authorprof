@@ -24,6 +24,7 @@ if __name__ == "__main__":
     p.add_argument("-m", "--mode",type=str,
         action="store", dest="mode",default="gender",
         help="Mode (gender|age|extroverted|stable|agreeable|conscientious|open) [gender]")
+
     p.add_argument("-f", "--folds",type=int,
         action="store", dest="folds",default=20,
         help="Folds during cross validation [20]")
@@ -116,7 +117,10 @@ if __name__ == "__main__":
         y_labels= [truth[id_usuario][index_y] for idd,id_usuario in ids]
     except ValueError:
         y_labels= [truth[id_usuario][index_y] for id_usuario in ids]
-        
+       
+
+
+
     # Pasando etiquetas a números    
     if opts.mode in ['age','gender']:
         labels={}

@@ -29,13 +29,21 @@ then
 	popd
 	bash script/test_all_en.sh ${testdir} ${modeldir} ${outdir}
 fi
-if [[ $LANG == *"Spanish"* ]]
+if [[ $LANG ==  *"lang=\"es\""* ]]
 then
-	echo hola
+	# Compreses model
+	pushd ${modeldir}
+	tar -xzvf model_es.tgz .
+	popd
+	bash script/test_all_es.sh ${testdir} ${modeldir} ${outdir}
 fi
-if [[ $LANG == *"Greek"* ]]
+if [[ $LANG ==  *"lang=\"it\""*  ]]
 then
-	echo adios
+	# Compreses model
+	pushd ${modeldir}
+	tar -xzvf model_it.tgz .
+	popd
+	bash script/test_all_it.sh ${testdir} ${modeldir} ${outdir}
 fi
 if [[ $LANG == *"Dutch"* ]]
 then
