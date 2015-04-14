@@ -1,7 +1,7 @@
 #!/bin/bash
 
 mode="gender"
-est=10
+est=2000
 echo "Running testing authorprof en"
 while getopts m: opt; do
 	case $opt in

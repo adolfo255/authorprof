@@ -31,7 +31,7 @@ python src/ef_list_baseline.py -p lb_reyes data/pan15/italian data/SentimentAnal
 python src/ef_list_frequency.py -p lf_reyes data/pan15/italian data/SentimentAnalysisDict/it/Reyes/counterFactuality-ita.txt data/SentimentAnalysisDict/it/Reyes/temporalCompression-ita.txt
 
 # Usando listas de polarity
-python src/ef_polarity.py --deli '#' data/pan15/italian data/SentimentAnalysisDict/it/affin-v1.txt
+python src/ef_polarity.py --deli '#' data/pan15/italian data/SentimentAnalysisDict/it/afinn-v1.txt
 
 # Emoticons y puntuación
 python src/ef_list_emoticons.py data/pan15/italian data/emoticons.txt
@@ -39,7 +39,7 @@ python src/ef_list_emoticons.py data/pan15/italian  data/SentimentAnalysisDict/i
 python src/ef_list_punctuation.py data/pan15/italian data/punctuation.txt
 
 # Sentiword
-python src/ef_sentiword.py data/pan15/italian data/SentimentAnalysisDict/en/SWN/SentiWN_it.csv
+python src/ef_sentiword_it.py data/pan15/italian data/SentimentAnalysisDict/it/SWN/SentiWN_it.tsv
 
 # Lista de Whissell
 python src/ef_wissell_t.py data/pan15/italian/ data/SentimentAnalysisDict/it/Whissell/whissell-v1.txt

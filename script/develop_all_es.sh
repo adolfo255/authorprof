@@ -32,7 +32,7 @@ python src/ef_list_emoticons.py data/pan15/spanish data/emoticons.txt
 python src/ef_list_punctuation.py data/pan15/spanish data/punctuation.txt
 
 # Sentiword
-#python src/ef_sentiword_2.py data/pan15/spanish data/SentimentAnalysisDict/es/SWN/SentiWN_es.csv
+python src/ef_sentiword_es.py data/pan15/spanish data/SentimentAnalysisDict/es/SWN/SentiWN_es.csv
 
 # Lista de Whissell
 python src/ef_wissell_t.py data/pan15/spanish/ data/SentimentAnalysisDict/es/Whissell/whissell_es.txt

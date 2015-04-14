@@ -14,7 +14,6 @@ while getopts m: opt; do
 	
 	esac
 	done
-
 # ------------  Based on vocabulary
 # tfidf
 python src/ef_tfidf.py --stopwords data/stop_words/stop_words_es.txt $1
@@ -31,7 +30,7 @@ python src/ef_list_emoticons.py $1 data/emoticons.txt
 python src/ef_list_punctuation.py $1 data/punctuation.txt
 
 # Sentiword
-python src/ef_sentiword_2.py $1 data/SentimentAnalysisDict/es/SWN/SentiWN_es.csv
+python src/ef_sentiword_es.py $1 data/SentimentAnalysisDict/es/SWN/SentiWN_es.csv
 
 # Lista de Whissell
 python src/ef_wissell_t.py $1/ data/SentimentAnalysisDict/es/Whissell/whissell_es.txt

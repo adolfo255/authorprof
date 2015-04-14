@@ -1,7 +1,7 @@
 #!/bin/bash
 
 mode="gender"
-est=20
+est=2000
 echo "Running training authorprof"
 while getopts m: opt; do
 	case $opt in

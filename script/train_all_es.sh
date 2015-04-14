@@ -1,7 +1,7 @@
 #!/bin/bash
 
 mode="gender"
-est=10
+est=2000
 echo "Running training authorprof"
 while getopts m: opt; do
 	case $opt in
@@ -18,7 +18,6 @@ while getopts m: opt; do
 
 
 rm $2/*
-
 # ------------  Based on vocabulary
 # tfidf
 python src/ef_tfidf.py --stopwords data/stop_words/stop_words_es.txt $1
@@ -35,7 +34,7 @@ python src/ef_list_emoticons.py $1 data/emoticons.txt
 python src/ef_list_punctuation.py $1 data/punctuation.txt
 
 # Sentiword
-python src/ef_sentiword_2.py $1 data/SentimentAnalysisDict/es/SWN/SentiWN_es.csv
+python src/ef_sentiword_es.py $1 data/SentimentAnalysisDict/es/SWN/SentiWN_es.csv
 
 # Lista de Whissell
 python src/ef_wissell_t.py $1/ data/SentimentAnalysisDict/es/Whissell/whissell_es.txt
@@ -50,7 +49,7 @@ python src/ef_pos.py $1
 
 # gender
 python src/train.py --model model_ge.model -d $2 --estimators ${est} -v $1
-python src/train.py --model model_age.model -d $2 --estimators ${est}  -m age -w weights/en_gender.txt -v $1
+python src/train.py --model model_age.model -d $2 --estimators ${est}  -m age -w weights/es_gender.txt -v $1
 python src/train.py --model model_ex.model -d $2 --estimators ${est}  -m ex -v $1
 python src/train.py --model model_st.model -d $2 --estimators ${est}  -m st -v $1
 python src/train.py --model model_op.model -d $2 --estimators ${est}  -m op -v $1
