@@ -15,44 +15,44 @@ while getopts m: opt; do
 	esac
 	done
 
-rm feats/*.idx
+rm feats/*
 # ------------  Based on vocabulary
 # tfidf
-python src/ef_tfidf.py --stopwords data/stop_words/stop_words_es.txt $1
+python src/ef_tfidf.py --stopwords data/stop_words/stop_words_es.txt data/pan15/spanish
 
 # Extrae links
-python src/ef_links.py $1
+python src/ef_links.py data/pan15/spanish
 
 # ------------ Bades on lists
 # Usando listas de polarity
-python src/ef_polarity.py $1 data/SentimentAnalysisDict/es/polarity-AFINN.txt
+python src/ef_polarity.py data/pan15/spanish data/SentimentAnalysisDict/es/polarity-AFINN.txt
 
 # Emoticons y puntuación
-python src/ef_list_emoticons.py $1 data/emoticons.txt
-python src/ef_list_punctuation.py $1 data/punctuation.txt
+python src/ef_list_emoticons.py data/pan15/spanish data/emoticons.txt
+python src/ef_list_punctuation.py data/pan15/spanish data/punctuation.txt
 
 # Sentiword
-python src/ef_sentiword_2.py $1 data/SentimentAnalysisDict/es/SWN/SentiWN_es.csv
+#python src/ef_sentiword_2.py data/pan15/spanish data/SentimentAnalysisDict/es/SWN/SentiWN_es.csv
 
 # Lista de Whissell
-python src/ef_wissell_t.py $1/ data/SentimentAnalysisDict/es/Whissell/whissell_es.txt
+python src/ef_wissell_t.py data/pan15/spanish/ data/SentimentAnalysisDict/es/Whissell/whissell_es.txt
 
 # Stadistica de corpus
-python src/ef_statistics.py  $1
+python src/ef_statistics.py  data/pan15/spanish
 
 # POS
-python src/extract_text.py $1/
-bash script/tag_spanish.sh $1/
-python src/ef_pos.py $1
+python src/extract_text.py data/pan15/spanish/
+bash script/tag_spanish.sh data/pan15/spanish/
+python src/ef_pos.py data/pan15/spanish
 
 
 # gender
-python src/develop.py --estimators ${est} -v $1
-python src/develop.py --estimators 300  -m age  -v $1
-python src/develop.py --estimators ${est}  -m ex -v $1
-python src/develop.py --estimators ${est}  -m st -v $1
-python src/develop.py --estimators ${est}  -m op -v $1
-python src/develop.py --estimators ${est}  -m co -v $1
-python src/develop.py --estimators ${est}  -m agre -v $1
+python src/develop.py --estimators ${est} -v data/pan15/spanish
+python src/develop.py --estimators ${est}  -m age -w weights/es_gender.txt -v data/pan15/spanish
+python src/develop.py --estimators ${est}  -m ex -v data/pan15/spanish
+python src/develop.py --estimators ${est}  -m st -v data/pan15/spanish
+python src/develop.py --estimators ${est}  -m op -v data/pan15/spanish
+python src/develop.py --estimators ${est}  -m co -v data/pan15/spanish
+python src/develop.py --estimators ${est}  -m agre -v data/pan15/spanish
 
 
