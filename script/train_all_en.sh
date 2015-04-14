@@ -47,10 +47,14 @@ python src/ef_wissell_t.py -d $2 $1/ data/SentimentAnalysisDict/en/Whissell/whis
 # Stadistica de corpus
 python src/ef_statistics.py -d $2 -v $1
 
-# POS
-python src/extract_text.py $1/
-bash script/tag_english.sh $1/
-python src/ef_pos.py $1
+cp -r $1 $2
+FILE=`basename $1`
+python src/extract_text.py $2/$FILE
+bash script/tag_english.sh $2/$FILE
+python src/ef_pos.py -d $2 $2/$FILE
+rm -rf $2/$FILE
+
+
 
 # gender
 python src/train.py --model model_ge.model -d $2 --estimators ${est} -v $1
