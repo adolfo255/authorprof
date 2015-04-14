@@ -49,4 +49,3 @@ python src/test.py --model model_co.model -d $2 --estimators ${est}  -m co $1> $
 python src/test.py --model model_agr.model -d $2 --estimators ${est}  -m agre $1> $3/res_agr.txt
 
 python src/mix_results.py --lang nl -l gender $3/res_gender.txt -l ex $3/res_ex.txt -l st $3/res_st.txt -l op $3/res_op.txt -l co $3/res_co.txt -l agre $3/res_agr.txt $3
-rm $3/*.txt
