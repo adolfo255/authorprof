@@ -42,6 +42,7 @@ FILE=`basename $1`
 python src/extract_text.py $2/$FILE
 bash script/tag_dutch.sh $2/$FILE
 python src/ef_pos.py -d $2 --tag 2 $2/$FILE
+rm -rf $2/$FILE
 
 
 # gender
