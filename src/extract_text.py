@@ -15,7 +15,7 @@ if __name__ == "__main__":
     p.add_argument("DIR",default=None,
         action="store", help="Directory with corpus")
     p.add_argument("-d", "--dir",
-            action="store_true", dest="dir",default="feats",
+            action="store", dest="dir",default="feats",
         help="Default directory for features [feats]")
     p.add_argument("--mix",
             action="store_true", dest="mix",default=True,
