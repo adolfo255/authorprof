@@ -45,9 +45,13 @@ then
 	popd
 	bash script/test_all_it.sh ${testdir} ${modeldir} ${outdir}
 fi
-if [[ $LANG == *"Dutch"* ]]
+if [[ $LANG ==  *"lang=\"nl\""*  ]]
 then
-	echo hhoollaa
+	pushd ${modeldir}
+	tar -xzvf model_du.tgz .
+	popd
+	bash script/test_all_du.sh ${testdir} ${modeldir} ${outdir}
+
 fi
 
 

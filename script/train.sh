@@ -44,9 +44,14 @@ then
 	popd
 
 fi
-if [[ $LANG == *"Dutch"* ]]
+if [[ $LANG == *"lang=\"nl\""* ]]
 then
-	echo hhoollaa
+	bash script/train_all_du.sh ${testdir} ${outdir}
+	# Compreses model
+	pushd ${outdir}
+	tar -czvf /tmp/model_du.tgz .
+	cp /tmp/model_du.tgz .
+	popd
 fi
 
 

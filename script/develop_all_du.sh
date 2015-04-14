@@ -27,7 +27,7 @@ python src/ef_list_punctuation.py data/pan15/dutch data/punctuation.txt
 
 # gender
 python src/develop.py --estimators ${est} -v data/pan15/dutch
-python src/develop.py --estimators 300  -m age  -v data/pan15/dutch
+#python src/develop.py --estimators 300  -m age  -v data/pan15/dutch
 python src/develop.py --estimators ${est}  -m ex -v data/pan15/dutch
 python src/develop.py --estimators ${est}  -m st -v data/pan15/dutch
 python src/develop.py --estimators ${est}  -m op -v data/pan15/dutch

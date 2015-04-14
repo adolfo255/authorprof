@@ -45,12 +45,12 @@ bash script/tag_spanish.sh $1/
 python src/ef_pos.py $1
 
 # gender
-python src/test.py --model model_ge.model -d $2 --estimators ${est} -v $1 > $3/res_gender.txt
-python src/test.py --model model_age.model -d $2 --estimators ${est}  -m age -v $1 > $3/res_age.txt
-python src/test.py --model model_ex.model -d $2 --estimators ${est}  -m ex -v $1> $3/res_ex.txt
-python src/test.py --model model_st.model -d $2 --estimators ${est}  -m st -v $1> $3/res_st.txt
-python src/test.py --model model_op.model -d $2 --estimators ${est}  -m op -v $1> $3/res_op.txt
-python src/test.py --model model_co.model -d $2 --estimators ${est}  -m co -v $1> $3/res_co.txt
-python src/test.py --model model_agr.model -d $2 --estimators ${est}  -m agre -v $1> $3/res_agr.txt
+python src/test.py --model model_ge.model -d $2 --estimators ${est} $1 > $3/res_gender.txt
+python src/test.py --model model_age.model -d $2 --estimators ${est}  -m age $1 > $3/res_age.txt
+python src/test.py --model model_ex.model -d $2 --estimators ${est}  -m ex $1> $3/res_ex.txt
+python src/test.py --model model_st.model -d $2 --estimators ${est}  -m st $1> $3/res_st.txt
+python src/test.py --model model_op.model -d $2 --estimators ${est}  -m op $1> $3/res_op.txt
+python src/test.py --model model_co.model -d $2 --estimators ${est}  -m co $1> $3/res_co.txt
+python src/test.py --model model_agr.model -d $2 --estimators ${est}  -m agre $1> $3/res_agr.txt
 
 
