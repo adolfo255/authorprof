@@ -49,7 +49,7 @@ def buscar(tweet):
 				count += 1
 
 		for word in words:
-			if not word.startswith('www') : continue
+			if not word.startswith('www.') : continue
 			link_name = word.split('.')
 			count = count + 1
 			links[link_name[1]] = links.get(link_name[1],0)+1
