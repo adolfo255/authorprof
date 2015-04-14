@@ -21,31 +21,31 @@ rm $2/*
 
 # ------------  Based on vocabulary
 # tfidf
-python src/ef_tfidf.py --stopwords data/stop_words/stop_words_en.txt $1
+python src/ef_tfidf.py -d $2 --stopwords data/stop_words/stop_words_en.txt $1
 
 # Extrae links
-python src/ef_links.py $1
+python src/ef_links.py -d $2 $1
 
 # ------------ Bades on lists
 # Usando listas de positivos y negativos
-python src/ef_list_baseline.py -p lb_reyes $1 data/SentimentAnalysisDict/en/Reyes/counterFactuality-english.txt data/SentimentAnalysisDict/en/Reyes/temporalCompression-english.txt
-python src/ef_list_frequency.py -p lf_reyes $1 data/SentimentAnalysisDict/en/Reyes/counterFactuality-english.txt data/SentimentAnalysisDict/en/Reyes/temporalCompression-english.txt
+python src/ef_list_baseline.py -d $2 -p lb_reyes $1 data/SentimentAnalysisDict/en/Reyes/counterFactuality-english.txt data/SentimentAnalysisDict/en/Reyes/temporalCompression-english.txt
+python src/ef_list_frequency.py -d $2 -p lf_reyes $1 data/SentimentAnalysisDict/en/Reyes/counterFactuality-english.txt data/SentimentAnalysisDict/en/Reyes/temporalCompression-english.txt
 
 # Usando listas de polarity
-python src/ef_polarity.py $1 data/SentimentAnalysisDict/en/polarity-AFINN.txt
+python src/ef_polarity.py -d $2 $1 data/SentimentAnalysisDict/en/polarity-AFINN.txt
 
 # Emoticons y puntuación
-python src/ef_list_emoticons.py $1 data/emoticons.txt
-python src/ef_list_punctuation.py $1 data/punctuation.txt
+python src/ef_list_emoticons.py -d $2 $1 data/emoticons.txt
+python src/ef_list_punctuation.py -d $2 $1 data/punctuation.txt
 
 # Sentiword
-python src/ef_sentiword.py $1 data/SentimentAnalysisDict/en/SWN/sentiword-net_en.tsv
+python src/ef_sentiword.py -d $2 $1 data/SentimentAnalysisDict/en/SWN/sentiword-net_en.tsv
 
 # Lista de Whissell
-python src/ef_wissell_t.py $1/ data/SentimentAnalysisDict/en/Whissell/whissell_en.txt
+python src/ef_wissell_t.py -d $2 $1/ data/SentimentAnalysisDict/en/Whissell/whissell_en.txt
 
 # Stadistica de corpus
-python src/ef_statistics.py -v $1
+python src/ef_statistics.py -d $2 -v $1
 
 # POS
 python src/extract_text.py $1/

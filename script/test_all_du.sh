@@ -33,11 +33,13 @@ python src/ef_list_punctuation.py -d $2 $1 data/punctuation.txt
 python src/ef_statistics.py -d $2 -v $1
 
 # POS
-cp -r data/pan15/dutch $2
-python src/extract_text.py $2/$1
-bash script/tag_dutch.sh $2/$1
-python src/ef_pos.py -d $2 --tag 2 $2/$1
-
+# POS
+cp -r $1 $2
+FILE=`basename $1`
+python src/extract_text.py $2/$FILE
+bash script/tag_dutch.sh $2/$FILE
+python src/ef_pos.py -d $2 --tag 2 $2/$FILE
+rm -rf $2/$FILE
 
 # gender
 python src/test.py --model model_ge.model -d $2 --estimators ${est} $1 > $3/res_gender.txt
@@ -49,3 +51,5 @@ python src/test.py --model model_co.model -d $2 --estimators ${est}  -m co $1> $
 python src/test.py --model model_agr.model -d $2 --estimators ${est}  -m agre $1> $3/res_agr.txt
 
 python src/mix_results.py --lang nl -l gender $3/res_gender.txt -l ex $3/res_ex.txt -l st $3/res_st.txt -l op $3/res_op.txt -l co $3/res_co.txt -l agre $3/res_agr.txt $3
+
+rm $3/*.txt
