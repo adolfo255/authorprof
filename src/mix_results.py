@@ -3,13 +3,8 @@
 from __future__ import print_function
 
 # Importar librerías requeridas
-import cPickle as pickle
-import scipy
-import numpy as np
 import argparse
 import os
-from config import feats
-from itertools import izip
 
 # Variables de configuaración
 NAME='train'
@@ -46,7 +41,7 @@ if __name__ == "__main__":
             labeling[line[0]]=line[1]
         labels[label]=labeling
         
-    xml_='<author id="{user}"\ntype="twitter"\nlang="{lang}\n"'
+    xml_='<author id="{user}"\ntype="twitter"\nlang="{lang}"\n'
 
     for user in labels['gender'].keys():
         xml=xml_.format(user=user,lang=opts.lang)
