@@ -44,9 +44,8 @@ cp -r $1 $2
 FILE=`basename $1`
 python src/extract_text.py $2/$FILE
 bash script/tag_spanish.sh -d $2  $1/$FILE
+python src/ef_pos.py --vect $2/pos.vec -d $2 $2/$FILE
 rm -rf $2/$FILE
-
-
 
 
 # gender
