@@ -36,7 +36,7 @@ python src/ef_list_emoticons.py -d $2  $1 data/emoticons.txt
 python src/ef_list_punctuation.py -d $2  $1 data/punctuation.txt
 
 # Sentiword
-python src/ef_sentiword.py -d $2  $1 data/SentimentAnalysisDict/en/SWN/sentiword-net_en.tsv
+python src/ef_sentiword_en.py -d $2  $1 data/SentimentAnalysisDict/en/SWN/sentiword-net_en.tsv
 
 # Lista de Whissell
 python src/ef_wissell_t.py -d $2  $1/ data/SentimentAnalysisDict/en/Whissell/whissell_en.txt
