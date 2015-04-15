@@ -28,7 +28,7 @@ if __name__ == "__main__":
             action="store_true", dest="pref",default=prefix,
         help="Prefix to save the file of features %s"%prefix)
     p.add_argument( "--vect",
-            action="store_true", dest="vect",default=None,
+            action="store", dest="vect",default=None,
         help="Training vector file")
     p.add_argument("--mix",
             action="store_true", dest="mix",default=True,
