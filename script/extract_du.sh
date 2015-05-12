@@ -10,6 +10,9 @@ python src/ef_links.py -d $2  $1
 # Usando listas de polarity
 python src/ef_polarity.py -d $2  $1 data/SentimentAnalysisDict/du/polarity-AFINN.txt
 
+
+python src/ef_distance.py -d $2 $1
+
 # Emoticons y puntuación
 python src/ef_list_emoticons.py -d $2 $1 data/emoticons.txt
 python src/ef_list_punctuation.py -d $2 $1 data/punctuation.txt

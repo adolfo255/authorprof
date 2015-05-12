@@ -23,7 +23,7 @@ if __name__ == "__main__":
     p.add_argument("DIR",default=None,
         action="store", help="Directory with corpus with json")
     p.add_argument("-d", "--dir",
-            action="store_true", dest="dir",default="feats",
+            action="store", dest="dir",default="feats",
         help="Default directory for features [feats]")
     p.add_argument("-p", "--pref",
             action="store_true", dest="pref",default=prefix,
@@ -82,15 +82,8 @@ if __name__ == "__main__":
 
 
     
-        import numpy as np
-        import matplotlib.pyplot as plt
         hist=np.histogram(listaVector,range=(0,1))
-        histogram_list.append(hist)
-    print(hist)
-        
-        
-    
-        
+        histogram_list.append(hist[0])
         
     # Imprime alguna información sobre los tweets
     if opts.verbose:

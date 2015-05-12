@@ -6,9 +6,13 @@ python src/ef_tfidf.py -d $2 --stopwords data/stop_words/stop_words_es.txt $1
 # Extrae links
 python src/ef_links.py -d $2 $1
 
-# ------------ Bades on lists
+python src/ef_distance.py -d $2 $1
+
+# ------------ Based on lists
 # Usando listas de polarity
 python src/ef_polarity.py -d $2 $1 data/SentimentAnalysisDict/es/polarity-AFINN.txt
+
+
 
 # Emoticons y puntuación
 python src/ef_list_emoticons.py -d $2 $1 data/emoticons.txt

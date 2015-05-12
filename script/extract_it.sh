@@ -15,6 +15,9 @@ python src/ef_list_frequency.py -d $2 -p lf_reyes $1 data/SentimentAnalysisDict/
 # Usando listas de polarity
 python src/ef_polarity.py -d $2 --deli '#' $1 data/SentimentAnalysisDict/it/afinn-v1.txt
 
+
+python src/ef_distance.py -d $2 $1
+
 # Emoticons y puntuación
 python src/ef_list_emoticons.py -d $2 $1 data/emoticons.txt
 python src/ef_list_emoticons.py -d $2 $1  data/SentimentAnalysisDict/it/taboowords_it.txt

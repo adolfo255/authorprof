@@ -7,9 +7,10 @@ feats=['tfidf',
             'list_emoticons',
             'list_punctuation',
             'sentiword',
+            'distance',
             'polarity',
             'statistics',
-            'pos'
+            'pos',
             ]
 
 
