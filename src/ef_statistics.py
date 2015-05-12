@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # -*- coding: utf-8
 from __future__ import print_function
 import argparse
@@ -102,6 +102,13 @@ if __name__ == "__main__":
         feat=[1 for t in  tweets if t[0] == "@"]
         stats.append(sum(feat))
         stats.append(sum(feat)*1.0/len(tweets))
+	# HashTags (amigos)
+        feat_hash=[sum([1 for l in t if l=="#"]) for t in  tweets]
+        stats.append(sum(feat_hash))
+        stats.append(sum(feat_hash)*1.0/len(tweets))
+        stats.append(max(feat_hash))
+        stats.append(min(feat_hash))
+
         # Arrobas minusculas
         feat=[sum([1 for l in t if l.islower()]) for t in  tweets]
         stats.append(sum(feat))
