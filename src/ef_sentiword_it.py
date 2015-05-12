@@ -5,12 +5,16 @@ import argparse
 import codecs
 import cPickle as pickle
 import numpy as np
+import csv
 import os
+import pandas as pd
+import re
+from collections import Counter
 
 from load_tweets import load_tweets
 
-NAME='ef_list_frequency'
-prefix='list_frequency'
+NAME='ef_sentiword'
+prefix='sentiword'
 
 if __name__ == "__main__":
     # Las opciones de línea de comando
@@ -18,13 +22,10 @@ if __name__ == "__main__":
 
     p.add_argument("DIR",default=None,
         action="store", help="Directory with corpus")
-   
-    p.add_argument("LIST1",default=None,
+
+    p.add_argument("LIST",default=None,
         action="store", help="File with list of words")
-    
-    p.add_argument("LIST2",default=None,
-        action="store", help="File with list of words")
- 
+
     p.add_argument("-d", "--dir",
             action="store", dest="dir",default="feats",
         help="Default directory for features [feats]")
@@ -40,22 +41,18 @@ if __name__ == "__main__":
     p.add_argument("--format",
             action="store_true", dest="format",default="pan15",
         help="Change to pan14 to use format from 2015 [feats]")
-    
+
     p.add_argument("-v", "--verbose",
         action="store_true", dest="verbose",
         help="Verbose mode [Off]")
-
-    p.add_argument("--stopwords", default=None,
-        action="store", dest="stopwords",
-        help="List of stop words [data/stopwords.txt]")
 
     opts = p.parse_args()
 
     if opts.verbose:
         def verbose(*args):
             print(*args)
-    else:   
-        verbose = lambda *a: None 
+    else:
+        verbose = lambda *a: None
 
 
     # Colecta los tweets y sus identificadores (idtweet y idusuario)
@@ -70,26 +67,67 @@ if __name__ == "__main__":
             verbose("Total usuarios : ",len(set([id for x,id in ids])))
         except ValueError:
             verbose("Total usuarios : ",len(ids))
-
+    
     # Calculamos los features
     # - Cargar lista de palabras uno
 
-    list_of_words1 = [line.strip() for line in codecs.open(opts.LIST1,encoding='utf-8') if
-            len(line.strip())>0]
-    list_of_words2 = [line.strip() for line in codecs.open(opts.LIST2,encoding='utf-8') if 
-            len(line.strip())>0]
 
-    counts=[]
-    for usuario in tweets:
-        usuario=usuario.split()
-        vec1=[usuario.count(item) for item in list_of_words1]
-        vec2=[usuario.count(item) for item in list_of_words2]
-        vec=vec1+vec2
-        counts.append(vec)
+    df = pd.read_csv(opts.LIST, sep = '\t')
 
-    # - Contamos las palabras en los tweets
-    feats = np.asarray(counts)
+    pos_score = df[df.PosScore > 0].SynsetTerms.unique()
+    words_pos = set(term.split("#", 1)[0].replace("_", " ") for term in         pos_score)
+    _regex_1 = re.compile(r"(\b{}\b)".format(r"\b|\b".join(words_pos)))
 
+
+
+    neg_score = df[df.NegScore > 0].SynsetTerms.unique()
+    words_neg = set(term.split("#", 1)[0].replace("_", " ") for term in         neg_score)
+    _regex_2 = re.compile(r"(\b{}\b)".format(r"\b|\b".join(words_neg)))
+
+    #print(tweets)
+
+    count_words_pos = [
+        
+             _regex_1.findall(sublista)
+         for sublista in tweets
+    ]
+
+    #print('pos count')
+    pos_count = [
+        sum(1 for ocurrencia in _regex_1.findall(sublista))
+        for sublista in tweets
+    ]
+
+
+    #print('.......')
+    count_words_neg = [
+         _regex_2.findall(sublista_2)
+        for sublista_2 in tweets
+    ]
+
+
+    #print('neg count')
+    neg_count = [
+        
+        sum(1 for ocurrencia_2 in _regex_2.findall(sublista_2))
+         for sublista_2 in tweets
+    ]
+
+
+
+
+    #print ('\nEste es el count: ',pos_count)
+    #print ('Se reconocieron las palabras: ', count_words_pos)
+
+#        print '\n********************************************************\n'
+
+    #print ('Este es el count negativo',neg_count)
+    #print ('Se reconocieron las palabras en el negativo:', count_words_neg)
+
+    feats = np.vstack((np.asarray([neg_count]),np.asarray([pos_count])))
+    feats = feats.T
+    print(feats)
+    
     # Guarda la matrix de features
     with open(os.path.join(opts.dir,opts.pref+'.dat'),'wb') as idxf:
         pickle.dump(feats, idxf, pickle.HIGHEST_PROTOCOL)
@@ -101,7 +139,3 @@ if __name__ == "__main__":
     # Guarda los indices por renglones de la matrix (usuario o tweet, usuario)
     with open(os.path.join(opts.dir,opts.pref+'.idx'),'wb') as idxf:
         pickle.dump(ids, idxf, pickle.HIGHEST_PROTOCOL)
-
-
-
-

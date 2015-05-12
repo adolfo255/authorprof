@@ -8,43 +8,36 @@ import numpy as np
 import os
 
 from load_tweets import load_tweets
+from collections import Counter
 
-NAME='ef_list_frequency'
-prefix='list_frequency'
+NAME='ef_polarity'
+prefix='polarity'
 
 if __name__ == "__main__":
     # Las opciones de línea de comando
     p = argparse.ArgumentParser(NAME)
-
     p.add_argument("DIR",default=None,
         action="store", help="Directory with corpus")
-   
     p.add_argument("LIST1",default=None,
         action="store", help="File with list of words")
-    
-    p.add_argument("LIST2",default=None,
-        action="store", help="File with list of words")
- 
     p.add_argument("-d", "--dir",
             action="store", dest="dir",default="feats",
         help="Default directory for features [feats]")
-
+    p.add_argument("--deli",
+            action="store", dest="deli",default=None,
+        help="Delimeter [None]")
     p.add_argument("-p", "--pref",
             action="store", dest="pref",default=prefix,
         help="Prefix to save the file of features %s"%prefix)
-
     p.add_argument("--mix",
             action="store_true", dest="mix",default=True,
         help="Mix tweets into pefiles")
-
     p.add_argument("--format",
             action="store_true", dest="format",default="pan15",
         help="Change to pan14 to use format from 2015 [feats]")
-    
     p.add_argument("-v", "--verbose",
         action="store_true", dest="verbose",
         help="Verbose mode [Off]")
-
     p.add_argument("--stopwords", default=None,
         action="store", dest="stopwords",
         help="List of stop words [data/stopwords.txt]")
@@ -64,31 +57,37 @@ if __name__ == "__main__":
     # Imprime alguna información sobre los tweets
     if opts.verbose:
         for i,tweet in enumerate(tweets[:10]):
-            verbose('Tweet example',i+1,tweet[:100])
-        verbose("Total tweets   : ",len(tweets))
+            verbose(u'Tweet example',i+1,tweet[:100])
+        verbose(u"Total tweets   : ",len(tweets))
         try:
-            verbose("Total usuarios : ",len(set([id for x,id in ids])))
+            verbose(u"Total usuarios : ",len(set([id for x,id in ids])))
         except ValueError:
-            verbose("Total usuarios : ",len(ids))
+            verbose(u"Total usuarios : ",len(ids))
 
     # Calculamos los features
     # - Cargar lista de palabras uno
 
-    list_of_words1 = [line.strip() for line in codecs.open(opts.LIST1,encoding='utf-8') if
-            len(line.strip())>0]
-    list_of_words2 = [line.strip() for line in codecs.open(opts.LIST2,encoding='utf-8') if 
-            len(line.strip())>0]
+    words=[]
+    for line in codecs.open(opts.LIST1,encoding='utf-8'):
+        line=line.strip()
+        if not opts.deli:
+            bits=line.split()
+            words.append((" ".join(bits[:-1]),float(bits[-1])))
+        else:
+            bits=line.split(opts.deli)
+            words.append((bits[0],float(bits[-1])))
 
-    counts=[]
-    for usuario in tweets:
-        usuario=usuario.split()
-        vec1=[usuario.count(item) for item in list_of_words1]
-        vec2=[usuario.count(item) for item in list_of_words2]
-        vec=vec1+vec2
-        counts.append(vec)
+    tweet_counts=[]
+    for tweet in tweets:
+        tweet_words=tweet.split()
+        counts=Counter(tweet_words)
+        vec=[counts[word]*val for word,val in words]
+        vec.append(sum(vec))
+        vec.append(sum(vec)/len(tweet_words))
+        tweet_counts.append(vec)
 
     # - Contamos las palabras en los tweets
-    feats = np.asarray(counts)
+    feats = np.asarray(tweet_counts)
 
     # Guarda la matrix de features
     with open(os.path.join(opts.dir,opts.pref+'.dat'),'wb') as idxf:

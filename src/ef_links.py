@@ -49,7 +49,7 @@ def buscar(tweet):
 				count += 1
 
 		for word in words:
-			if not word.startswith('www') : continue
+			if not word.startswith('www.') : continue
 			link_name = word.split('.')
 			count = count + 1
 			links[link_name[1]] = links.get(link_name[1],0)+1
@@ -76,16 +76,16 @@ if __name__ == "__main__":
     
 
     p.add_argument("-d", "--dir",
-            action="store_true", dest="dir",default="feats",
+            action="store", dest="dir",default="feats",
         help="Default directory for features [feats]")
     
 
     p.add_argument("-p", "--pref",
-            action="store_true", dest="pref",default=prefix,
+            action="store", dest="pref",default=prefix,
         help="Prefix to save the file of features %s"%prefix)
     
     p.add_argument("-l", "--links",
-            action="store_true", dest="links",default=None,
+            action="store", dest="links",default=None,
         help="Links list to read from")
     
 
@@ -160,6 +160,6 @@ if __name__ == "__main__":
         pickle.dump(ids, idxf, pickle.HIGHEST_PROTOCOL)
 
     # Guarda los links  de la matrix (usuario o tweet, usuario)
-    with open(os.path.join(opts.dir,prefix+'.links'),'wb') as idxf:
+    with open(os.path.join(opts.dir,prefix+'.vec'),'wb') as idxf:
         pickle.dump(link_list, idxf, pickle.HIGHEST_PROTOCOL)
 

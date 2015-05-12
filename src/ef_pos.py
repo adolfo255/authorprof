@@ -13,8 +13,8 @@ import codecs
 from load_tweets import load_tweets
 
 # Variables de configuaración
-NAME='ef_tfidf'
-prefix='tfidf'
+NAME='ef_pos'
+prefix='pos'
 
 if __name__ == "__main__":
     # Las opciones de línea de comando
@@ -39,6 +39,9 @@ if __name__ == "__main__":
     p.add_argument("--stopwords", default=None,
         action="store", dest="stopwords",
         help="List of stop words [data/stopwords.txt]")
+    p.add_argument("--tag",
+        action="store", dest="tag",default=1,type=int,
+        help="Position of pos tag ")
     p.add_argument("--ngram",
         action="store", dest="ngrammax",default=1,type=int,
         help="El valor máximo de ngramas ")
@@ -83,6 +86,16 @@ if __name__ == "__main__":
         from sklearn.feature_extraction import text
         my_stop_words = text.ENGLISH_STOP_WORDS.union(spanish_stop_words)
 
+    # Reading tagged files
+
+    tagged=[]
+    for idd in ids:
+        tagged.append([])
+        for line in\
+            codecs.open(os.path.join(opts.DIR,idd+".txt_tag"),'r','utf-8'):
+                tagged[-1].append(line.strip().split()[-opts.tag])
+
+    tagged=[" ".join(t) for t in tagged]
 
     # - Creamos contador
     if not opts.vect:
@@ -91,14 +104,13 @@ if __name__ == "__main__":
                 stop_words=set(my_stop_words),
                 ngram_range=(1,opts.ngrammax))
         # - Contamos las palabras en los tweets
-        feats = tfidf_vect.fit_transform(np.asarray(tweets))
+        feats = tfidf_vect.fit_transform(np.asarray(tagged))
     else:
         with open(opts.vect,"r") as model:
             s=model.read()
             tfidf_vect = pickle.loads(s)
             # - Contamos las palabras en los tweets
             feats = tfidf_vect.transform(np.asarray(tweets))
-
 
     # Guarda la matrix de features
     with open(os.path.join(opts.dir,prefix+'.dat'),'wb') as idxf:
@@ -108,7 +120,7 @@ if __name__ == "__main__":
         pickle.dump(tfidf_vect, idxf, pickle.HIGHEST_PROTOCOL)
 
     # Imprimimos información de la matrix
-    verbose("First feats names :",tfidf_vect.get_feature_names()[:10])
+    verbose("First feats names :",tfidf_vect.get_feature_names()[:100])
     verbose("Total de features :",feats.shape[1])
     verbose("Total de renglones:",feats.shape[0])
 

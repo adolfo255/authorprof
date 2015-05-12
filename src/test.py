@@ -8,6 +8,7 @@ import scipy
 import numpy as np
 import argparse
 import os
+from config import feats
 
 # Variables de configuaración
 NAME='develop'
@@ -17,17 +18,18 @@ if __name__ == "__main__":
     p = argparse.ArgumentParser(NAME)
     p.add_argument("DIR",default=None,
         action="store", help="Directory with corpus")
-    p.add_argument("", "--model",type=str,
+    p.add_argument("--model",type=str,
         action="store", dest="model",default="model.dat",
         help="Model name")
     p.add_argument("-m", "--mode",type=str,
         action="store", dest="mode",default="gender",
         help="Mode (gender|age|extroverted|stable|agreeable|conscientious|open) [gender]")
+
     p.add_argument("-f", "--folds",type=int,
         action="store", dest="folds",default=20,
         help="Folds during cross validation [20]")
     p.add_argument("-d", "--dir",
-        action="store_true", dest="dir",default="feats",
+        action="store", dest="dir",default="feats",
         help="Default directory for features [feats]")
     p.add_argument("-v", "--verbose",
         action="store_true", dest="verbose",
@@ -44,8 +46,6 @@ if __name__ == "__main__":
             print(*args)
     else:   
         verbose = lambda *a: None 
-
-    feats=['1grams','tfidf','lb_reyes','lb_hu','lf_reyes','lf_hu','whissell_t','links']
 
     if opts.mode=="gender":
         index_y=0
@@ -117,7 +117,10 @@ if __name__ == "__main__":
         y_labels= [truth[id_usuario][index_y] for idd,id_usuario in ids]
     except ValueError:
         y_labels= [truth[id_usuario][index_y] for id_usuario in ids]
-        
+       
+
+
+
     # Pasando etiquetas a números    
     if opts.mode in ['age','gender']:
         labels={}
@@ -136,23 +139,28 @@ if __name__ == "__main__":
         y=np.array([ labels.index(label) for label in y_labels])
     else:
         y=np.array([float(l) for l in y_labels])
-        print(y)
 
 
     y_=[]
     prediction_=[]
     verbose("Predicting")
     X_test = x
-    with open(opts.model,"r") as model:
+    with open(os.path.join(opts.dir,opts.model),"rb") as model:
         s=model.read()
         model = pickle.loads(s)
         
 
     if opts.mode in ['age','gender']:
+        with open(os.path.join(opts.dir,opts.mode+'.labels'),'rb') as idxf:
+            s=idxf.read()
+            labels = pickle.loads(s)
+
+
         # Aprendiendo
         classifier=model
         # Prediciendo
         prediction = classifier.predict(X_test)
+        prediction = [labels[i] for i in prediction]
     else:
         # Aprendiendo
         regressor=model
@@ -160,6 +168,8 @@ if __name__ == "__main__":
         prediction = regressor.predict(X_test)
     
         prediction_.extend(prediction)
-    print(prediction)
+
+    for x,y in zip(ids,prediction):
+        print(x,y)
 
 

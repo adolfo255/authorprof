@@ -24,7 +24,7 @@ if __name__ == "__main__":
         action="store", help="File with list of words")
 
     p.add_argument("-d", "--dir",
-            action="store_true", dest="dir",default="feats",
+            action="store", dest="dir",default="feats",
         help="Default directory for features [feats]")
 
     p.add_argument("-p", "--pref",
