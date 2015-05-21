@@ -6,9 +6,8 @@ from __future__ import print_function
 import cPickle as pickle
 from sklearn.feature_extraction.text import CountVectorizer
 import numpy as np
-import argparse
-import os
-import codecs
+import argparse, os, codecs, re, itertools
+import distance as dis
 
 # Local imports
 from load_tweets import load_tweets
@@ -23,7 +22,7 @@ if __name__ == "__main__":
     p.add_argument("DIR",default=None,
         action="store", help="Directory with corpus with json")
     p.add_argument("-d", "--dir",
-            action="store", dest="dir",default="feats",
+            action="store_true", dest="dir",default="feats",
         help="Default directory for features [feats]")
     p.add_argument("-p", "--pref",
             action="store_true", dest="pref",default=prefix,
@@ -52,7 +51,7 @@ if __name__ == "__main__":
         str1 = set(str1.split())
         str2 = set(str2.split())
         return float(len(str1 & str2)) / len(str1 | str2)
-
+    
     
 
     # prepara función de verbose
@@ -64,26 +63,45 @@ if __name__ == "__main__":
 
     # Colecta los tweets y sus identificadores (idtweet y idusuario)
     users,ids=load_tweets(opts.DIR,opts.format,False)
-    #print ('************Aqui********')    
-
+    #print (users)
+    #lo limpiamos de links
+    clean_users = [[re.sub(r'\bhttps?:\/\/.*[\r\n]*', '', i)] for x in users for i in x]    
+    #Lo mostramos 
+    print (clean_users)
     histogram_list = []
-    for tweets in users:
-        #print("****",list(tweets))
+
+
+
+
+    for tweets in clean_users:
+        #print(tweets)
+        
         tweets_1 = list(tweets)
         tweets_2 = list(tweets)
+        
+        #tweets_1 = list(clean_tweets_2)
+        #tweets_2 = list(clean_tweets_2)
+        #print(tweets_1)
     
-
         listaVector=[]
         contador=0
         for i,cadena in enumerate(tweets_1):
             for cadena2 in tweets_2[i+1:]:
+                
                 distanciaJaccard=DistJaccard(cadena,cadena2)
                 listaVector.append(distanciaJaccard)
 
 
     
+        import numpy as np
+        import matplotlib.pyplot as plt
         hist=np.histogram(listaVector,range=(0,1))
-        histogram_list.append(hist[0])
+        histogram_list.append(hist)
+    print(hist)
+        
+        
+    
+        
         
     # Imprime alguna información sobre los tweets
     if opts.verbose:
@@ -132,9 +150,3 @@ if __name__ == "__main__":
     with open(os.path.join(opts.dir,prefix+'.idx'),'wb') as idxf:
         pickle.dump(ids, idxf, pickle.HIGHEST_PROTOCOL)
  
-   
-    
-
-
-
-
