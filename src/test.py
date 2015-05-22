@@ -25,7 +25,9 @@ if __name__ == "__main__":
     p.add_argument("-m", "--mode",type=str,
         action="store", dest="mode",default="gender",
         help="Mode (gender|age|extroverted|stable|agreeable|conscientious|open) [gender]")
-
+    p.add_argument("-p", "--pca",
+        action="store_true", dest="pca",
+        help="Use PCA reduction [Off]")
     p.add_argument("-f", "--folds",type=int,
         action="store", dest="folds",default=20,
         help="Folds during cross validation [20]")
@@ -146,10 +148,16 @@ if __name__ == "__main__":
     prediction_=[]
     verbose("Predicting")
     X_test = x
-    with open(os.path.join(opts.dir,opts.model),"rb") as model:
-        s=model.read()
+    with open(os.path.join(opts.dir,opts.model),"rb") as fmodel:
+        s=fmodel.read()
         model = pickle.loads(s)
-        
+   
+    if opts.pca:
+        with open(os.path.join(opts.dir,"pca.model"),"rb") as fmodel:
+            s=fmodel.read()
+            pca = pickle.loads(s)
+        X_test = pca.transform(X_test)
+           
 
     if opts.mode in ['age','gender']:
         with open(os.path.join(opts.dir,opts.mode+'.labels'),'rb') as idxf:

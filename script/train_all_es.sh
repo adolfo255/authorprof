@@ -15,7 +15,6 @@ while getopts m: opt; do
 	esac
 	done
 
-
 rm $2/*
 bash script/extract_es.sh $@
 

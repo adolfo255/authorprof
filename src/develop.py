@@ -13,6 +13,7 @@ from config import feats
 
 from sklearn.metrics.metrics import accuracy_score
 from sklearn.cross_validation import KFold
+from sklearn.decomposition import RandomizedPCA as PCA
 
 
 # Variables de configuaración
@@ -35,6 +36,9 @@ if __name__ == "__main__":
     p.add_argument("-d", "--dir",
         action="store", dest="dir",default="feats",
         help="Default directory for features [feats]")
+    p.add_argument("-p", "--pca",
+        action="store_true", dest="pca",
+        help="Use PCA reduction [Off]")
     p.add_argument("-v", "--verbose",
         action="store_true", dest="verbose",
         help="Verbose mode [Off]")
@@ -161,6 +165,11 @@ if __name__ == "__main__":
     for i,(train,test) in enumerate(kf):
         # Cortando datos en training y test
         X_train, X_test, y_train, y_test = x[train],x[test],y[train],y[test]
+        if opts.pca:
+            pca = PCA()
+            
+            X_train = pca.fit_transform(X_train)
+            X_test = pca.transform(X_test)
 
         if opts.mode in ['age','gender']:
             # Preparando la máquina de aprendizaje
