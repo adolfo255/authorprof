@@ -15,31 +15,8 @@ while getopts m: opt; do
 	esac
 	done
 
-# ------------  Based on vocabulary
-# tfidf
-python src/ef_tfidf.py -d $2  --vect $2/tfidf.vec --stopwords data/stop_words/stop_words_du.txt $1
 
-# Extrae links
-python src/ef_links.py -d $2 -l $2/links.vec $1
-
-# Usando listas de polarity
-python src/ef_polarity.py -d $2 $1 data/SentimentAnalysisDict/du/polarity-AFINN.txt
-
-# Emoticons y puntuación
-python src/ef_list_emoticons.py -d $2 $1 data/emoticons.txt
-python src/ef_list_punctuation.py -d $2 $1 data/punctuation.txt
-
-# Stadistica de corpus
-python src/ef_statistics.py -d $2 -v $1
-
-# POS
-# POS
-cp -r $1 $2
-FILE=`basename $1`
-python src/extract_text.py $2/$FILE
-bash script/tag_dutch.sh $2/$FILE
-python src/ef_pos.py -d $2 --tag 2 $2/$FILE
-rm -rf $2/$FILE
+bash script/extract_du.sh -t $@ 
 
 # gender
 python src/test.py --model model_ge.model -d $2 --estimators ${est} $1 > $3/res_gender.txt
