@@ -1,11 +1,32 @@
-rm $2/*
+#!/bin/bash
+
+mode=0
+while getopts t opt; do
+	case $opt in
+	t)
+	mode=1
+    ;;
+	esac
+	done
+shift $(($OPTIND - 1))
 
 # ------------  Based on vocabulary
 # tfidf
-python src/ef_tfidf.py -d $2 --stopwords data/stop_words/stop_words_it.txt $1
+if [ $mode -eq 0 ]; 
+then
+	python src/ef_tfidf.py -d $2 --stopwords data/stop_words/stop_words_it.txt $1
+else
+	python src/ef_tfidf.py -d $2 --vect $2/tfidf.vec --stopwords data/stop_words/stop_words_it.txt $1
+fi
 
 # Extrae links
-python src/ef_links.py -d $2 $1
+if [ $mode -eq 0 ]; 
+then
+	python src/ef_links.py -d $2 $1
+else
+	python src/ef_links.py -d $2 -l $2/links.vec $1
+fi
+
 
 # ------------ Bades on lists
 # Usando listas de positivos y negativos
@@ -37,7 +58,12 @@ cp -r $1 $2
 FILE=`basename $1`
 python src/extract_text.py $2/$FILE
 bash script/tag_italian.sh $2/$FILE
-python src/ef_pos.py -d $2 --tag 1 $2/$FILE
+if [ $mode -eq 0 ]; 
+then
+	python src/ef_pos.py -d $2 --tag 1 $2/$FILE
+else
+	python src/ef_pos.py --vect $2/pos.vec --tag 1 -d $2 $2/$FILE
+fi
 rm -rf $2/$FILE
 
 
