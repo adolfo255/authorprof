@@ -34,5 +34,5 @@ cp -r $1 $2
 FILE=`basename $1`
 python src/extract_text.py $2/$FILE
 bash script/tag_english.sh $2/$FILE
-python src/ef_pos.py -d $2 $2/$FILE
+python src/ef_pos.py --ngram 1 --tag 2 -d $2 $2/$FILE
 rm -rf $2/$FILE
