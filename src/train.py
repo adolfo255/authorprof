@@ -9,6 +9,7 @@ import numpy as np
 import argparse
 import os
 from config import feats
+from sklearn.decomposition import RandomizedPCA as PCA
 
 # Variables de configuaración
 NAME='train'
@@ -31,6 +32,9 @@ if __name__ == "__main__":
     p.add_argument("-d", "--dir",type=str,
         action="store", dest="dir",default="feats",
         help="Default directory for features [feats]")
+    p.add_argument("-p", "--pca",
+        action="store_true", dest="pca",
+        help="Use PCA reduction [Off]")
     p.add_argument("-v", "--verbose",
         action="store_true", dest="verbose",
         help="Verbose mode [Off]")
@@ -157,6 +161,9 @@ if __name__ == "__main__":
     verbose("Training")
     X_train, y_train = x,y
 
+    if opts.pca:
+        pca = PCA()
+        X_train = pca.fit_transform(X_train)
 
     if opts.mode in ['age','gender']:
         # Preparando la máquina de aprendizaje
@@ -182,5 +189,10 @@ if __name__ == "__main__":
     verbose("Saving model into ",opts.model)
     with open(os.path.join(opts.dir,opts.model),"w") as modelf:
         modelf.write(stream_model)
+    stream_model = pickle.dumps(pca)
+    verbose("Saving feature reduction ","pca")
+    with open(os.path.join(opts.dir,"pca.transform"),"w") as modelf:
+        modelf.write(stream_model)
+
 
 

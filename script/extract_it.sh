@@ -16,7 +16,7 @@ python src/ef_list_frequency.py -d $2 -p lf_reyes $1 data/SentimentAnalysisDict/
 python src/ef_polarity.py -d $2 --deli '#' $1 data/SentimentAnalysisDict/it/afinn-v1.txt
 
 
-python src/ef_distance.py -d $2 $1
+#python src/ef_distance.py -d $2 $1
 
 # Emoticons y puntuación
 python src/ef_list_emoticons.py -d $2 $1 data/emoticons.txt
@@ -37,7 +37,7 @@ cp -r $1 $2
 FILE=`basename $1`
 python src/extract_text.py $2/$FILE
 bash script/tag_italian.sh $2/$FILE
-python src/ef_pos.py -d $2 --tag 2 $2/$FILE
+python src/ef_pos.py -d $2 --tag 1 $2/$FILE
 rm -rf $2/$FILE
 
 

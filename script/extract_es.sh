@@ -6,7 +6,7 @@ python src/ef_tfidf.py -d $2 --stopwords data/stop_words/stop_words_es.txt $1
 # Extrae links
 python src/ef_links.py -d $2 $1
 
-python src/ef_distance.py -d $2 $1
+#python src/ef_distance.py -d $2 $1
 
 # ------------ Based on lists
 # Usando listas de polarity

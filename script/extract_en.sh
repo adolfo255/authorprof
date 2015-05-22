@@ -12,7 +12,7 @@ python src/ef_links.py -d $2 $1
 python src/ef_list_baseline.py -d $2 -p lb_reyes $1 data/SentimentAnalysisDict/en/Reyes/counterFactuality-english.txt data/SentimentAnalysisDict/en/Reyes/temporalCompression-english.txt
 python src/ef_list_frequency.py -d $2 -p lf_reyes $1 data/SentimentAnalysisDict/en/Reyes/counterFactuality-english.txt data/SentimentAnalysisDict/en/Reyes/temporalCompression-english.txt
 
-python src/ef_distance.py -v -d $2 $1
+#python src/ef_distance.py -d $2 $1
 
 # Usando listas de polarity
 python src/ef_polarity.py -d $2 $1 data/SentimentAnalysisDict/en/polarity-AFINN.txt

@@ -43,7 +43,7 @@ if __name__ == "__main__":
         action="store", dest="tag",default=1,type=int,
         help="Position of pos tag ")
     p.add_argument("--ngram",
-        action="store", dest="ngrammax",default=1,type=int,
+        action="store", dest="ngrammax",default=3,type=int,
         help="El valor máximo de ngramas ")
     p.add_argument("--min",
         action="store", dest="min",default=10,type=int,
@@ -94,8 +94,7 @@ if __name__ == "__main__":
         for line in\
             codecs.open(os.path.join(opts.DIR,idd+".txt_tag"),'r','utf-8'):
                 tagged[-1].append(line.strip().split()[-opts.tag])
-
-    tagged=[" ".join(t) for t in tagged]
+        tagged[-1]=" ".join(tagged[-1])
 
     # - Creamos contador
     if not opts.vect:
@@ -105,6 +104,7 @@ if __name__ == "__main__":
                 ngram_range=(1,opts.ngrammax))
         # - Contamos las palabras en los tweets
         feats = tfidf_vect.fit_transform(np.asarray(tagged))
+        print(tfidf_vect.get_feature_names())
     else:
         with open(opts.vect,"r") as model:
             s=model.read()

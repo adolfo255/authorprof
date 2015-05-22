@@ -1,7 +1,7 @@
 #!/bin/bash
 
 mode="gender"
-est=2000
+est=1000
 echo "Running training authorprof"
 while getopts m: opt; do
 	case $opt in
@@ -18,12 +18,12 @@ while getopts m: opt; do
 bash script/extract_es.sh $@
 
 # gender
-python src/develop.py --estimators ${est} -v data/pan15/spanish
-python src/develop.py --estimators ${est}  -m age -w weights/es_gender.txt -v data/pan15/spanish
-python src/develop.py --estimators ${est}  -m ex -v data/pan15/spanish
-python src/develop.py --estimators ${est}  -m st -v data/pan15/spanish
-python src/develop.py --estimators ${est}  -m op -v data/pan15/spanish
-python src/develop.py --estimators ${est}  -m co -v data/pan15/spanish
-python src/develop.py --estimators ${est}  -m agre -v data/pan15/spanish
+python src/develop.py -v --estimators ${est} -v data/pan15/spanish
+python src/develop.py -v --estimators ${est}  -m age -w weights/es_gender.txt -v data/pan15/spanish
+python src/develop.py -v --estimators ${est}  -m ex -v data/pan15/spanish
+python src/develop.py -v --estimators ${est}  -m st -v data/pan15/spanish
+python src/develop.py -v --estimators ${est}  -m op -v data/pan15/spanish
+python src/develop.py -v --estimators ${est}  -m co -v data/pan15/spanish
+python src/develop.py -v --estimators ${est}  -m agre -v data/pan15/spanish
 
 

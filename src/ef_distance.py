@@ -7,7 +7,6 @@ import cPickle as pickle
 from sklearn.feature_extraction.text import CountVectorizer
 import numpy as np
 import argparse, os, codecs, re, itertools
-import distance as dis
 
 # Local imports
 from load_tweets import load_tweets
@@ -22,10 +21,10 @@ if __name__ == "__main__":
     p.add_argument("DIR",default=None,
         action="store", help="Directory with corpus with json")
     p.add_argument("-d", "--dir",
-            action="store_true", dest="dir",default="feats",
+            action="store", dest="dir",default="feats",
         help="Default directory for features [feats]")
     p.add_argument("-p", "--pref",
-            action="store_true", dest="pref",default=prefix,
+            action="store", dest="pref",default=prefix,
         help="Prefix to save the file of features %s"%prefix)
     p.add_argument("--mix",
             action="store_true", dest="mix",default=True,
@@ -36,12 +35,9 @@ if __name__ == "__main__":
     p.add_argument("-v", "--verbose",
         action="store_true", dest="verbose",
         help="Verbose mode [Off]")
-
     p.add_argument("--stopwords", default=None,
         action="store", dest="stopwords",
         help="List of stop words [data/stopwords.txt]")
-
-
     p.add_argument("--min",
         action="store", dest="min",default=10,type=int,
         help="Define el valor minimo de cuentas ")
@@ -50,8 +46,10 @@ if __name__ == "__main__":
     def DistJaccard(str1, str2):
         str1 = set(str1.split())
         str2 = set(str2.split())
-        return float(len(str1 & str2)) / len(str1 | str2)
-    
+        try:
+            return float(len(str1 & str2)) / len(str1 | str2)
+        except ZeroDivisionError:
+            return 0
     
 
     # prepara función de verbose
@@ -65,13 +63,9 @@ if __name__ == "__main__":
     users,ids=load_tweets(opts.DIR,opts.format,False)
     #print (users)
     #lo limpiamos de links
-    clean_users = [[re.sub(r'\bhttps?:\/\/.*[\r\n]*', '', i)] for x in users for i in x]    
+    clean_users = [[re.sub(r'\bhttps?:\/\/.*[\r\n]*', u'', i) for i in x] for x in users]    
     #Lo mostramos 
-    print (clean_users)
     histogram_list = []
-
-
-
 
     for tweets in clean_users:
         #print(tweets)
@@ -96,11 +90,7 @@ if __name__ == "__main__":
         import numpy as np
         import matplotlib.pyplot as plt
         hist=np.histogram(listaVector,range=(0,1))
-        histogram_list.append(hist)
-    print(hist)
-        
-        
-    
+        histogram_list.append(hist[0])
         
         
     # Imprime alguna información sobre los tweets

@@ -24,17 +24,17 @@ if [[ $LANG == *"lang=\"en\""* ]]
 then
 	bash script/develop_all_en.sh ${testdir} ${model}
 fi
-if [[ $LANG == *"Spanish"* ]]
+if [[ $LANG == *"lang=\"es\""* ]]
 then
-	echo hola
+	bash script/develop_all_es.sh ${testdir} ${model}
 fi
-if [[ $LANG == *"Greek"* ]]
+if [[ $LANG == *"lang=\"it\""* ]]
 then
-	echo adios
+	bash script/develop_all_it.sh ${testdir} ${model}
 fi
-if [[ $LANG == *"Dutch"* ]]
+if [[ $LANG == *"lang=\"nl\""* ]]
 then
-	echo hhoollaa
+	bash script/develop_all_du.sh ${testdir} ${model}
 fi
 
 
