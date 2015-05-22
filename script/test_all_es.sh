@@ -2,20 +2,8 @@
 
 mode="gender"
 est=2000
-echo "Running testing authorprof en"
-while getopts m: opt; do
-	case $opt in
-	m)
-	mode=$OPTARG
-    ;;
-	e)
-	est=$OPTARG
-	;;
-	
-	esac
-	done
 
-bash script/extract_en.sh -t $@ 
+bash script/extract_es.sh -t $@ 
 
 # gender
 python src/test.py --model model_ge.model -d $2 --estimators ${est} $1 > $3/res_gender.txt

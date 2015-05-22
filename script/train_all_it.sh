@@ -16,6 +16,7 @@ while getopts m: opt; do
 	done
 
 
+rm $2/*
 bash script/extract_it.sh $@
 
 # gender
